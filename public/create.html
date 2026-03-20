@@ -1,56 +1,202 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Create Listing</title>
-</head>
-<body>
-  <h1>Create Listing</h1>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Listing | Pickup Details</title>
 
-  <input id="name" placeholder="First Name"><br><br>
-  <input id="email" placeholder="Email"><br><br>
-  <textarea id="description" placeholder="Describe your item"></textarea><br><br>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      color: #333;
+    }
 
-  <input id="images" type="file" multiple accept="image/*"><br><br>
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 16px 24px;
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+    }
 
-  <button onclick="submitListing()">Submit</button>
+    .logo {
+      height: 40px;
+      margin-right: 12px;
+    }
 
-  <p id="status"></p>
+    .tagline {
+      font-size: 14px;
+      color: #666;
+    }
 
-  <script>
-    async function submitListing() {
-      const name = document.getElementById('name').value
-      const email = document.getElementById('email').value
-      const description = document.getElementById('description').value
-      const files = document.getElementById('images').files
+    /* FORM CONTAINER */
+    .container {
+      max-width: 520px;
+      margin: 40px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
 
-      if (files.length > 3) {
-        document.getElementById('status').innerText = 'Max 3 images'
-        return
-      }
+    h1 {
+      margin-top: 0;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
 
-      document.getElementById('status').innerText = 'Submitting...'
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
 
-      // TEMP: no image upload yet
-      const res = await fetch('/api/create-listing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: name, // temporary mapping
-          description,
-          price: '',
-          contact_email: email,
-          image_urls: []
-        })
-      })
+    .helper {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 6px;
+    }
 
-      const data = await res.json()
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
 
-      if (data.success) {
-        document.getElementById('status').innerText = 'Listing created!'
-      } else {
-        document.getElementById('status').innerText = 'Error'
+    textarea {
+      resize: vertical;
+      min-height: 140px;
+    }
+
+    input[type="file"] {
+      border: none;
+      padding: 0;
+    }
+
+    .file-label {
+      margin-top: 16px;
+      font-weight: bold;
+    }
+
+    .checkbox {
+      margin-top: 20px;
+      font-size: 13px;
+    }
+
+    .checkbox input {
+      margin-right: 6px;
+    }
+
+    .checkbox a {
+      color: #0077cc;
+      text-decoration: none;
+    }
+
+    .checkbox a:hover {
+      text-decoration: underline;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #2d4f73;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1f3a55;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
       }
     }
-  </script>
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <img src="/logo.png" alt="Pickup Details Logo" class="logo" />
+    <div class="tagline">Organizing buyer inquiries into a structured format.</div>
+  </div>
+
+  <!-- FORM -->
+  <div class="container">
+    <h1>Create Listing</h1>
+
+    <form>
+
+      <!-- TITLE -->
+      <label for="title">Title (optional)</label>
+      <input type="text" id="title" name="title" placeholder="Short title for your item" />
+
+      <!-- FIRST NAME -->
+      <label for="name">First Name</label>
+      <div class="helper">First name only — no last name needed</div>
+      <input type="text" id="name" name="name" required />
+
+      <!-- EMAIL -->
+      <label for="email">Email</label>
+      <div class="helper">Used to contact you. Never shown publicly.</div>
+      <input type="email" id="email" name="email" required />
+
+      <!-- LOCATION -->
+      <label for="location">Location</label>
+      <div class="helper">Use a general area — exact meetup can coordinate with buyer later</div>
+      <input type="text" id="location" name="location" placeholder="City, neighborhood, etc." />
+
+      <!-- DESCRIPTION -->
+      <label for="description">Describe your item</label>
+      <textarea id="description" name="description" placeholder="Condition, price (optional), anything buyers should know..." required></textarea>
+
+      <!-- FILE UPLOAD -->
+      <div class="file-label">Upload photos (up to 3)</div>
+      <input type="file" id="images" name="images" accept="image/*" multiple />
+
+      <!-- POLICY CHECKBOX -->
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" required />
+          I have read and agree to the 
+          <a href="#" target="_blank">Privacy Policy</a> 
+          and 
+          <a href="#" target="_blank">Terms of Service</a>.
+        </label>
+      </div>
+
+      <!-- SUBMIT -->
+      <button type="submit">Create Listing</button>
+
+      <!-- FOOTER -->
+      <div class="footer-note">
+        Buyer inquiries will be organized and sent to your email.
+      </div>
+
+    </form>
+  </div>
+
 </body>
 </html>
