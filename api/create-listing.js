@@ -1,11 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from './lib/supabase'
 import { Resend } from 'resend'
 import crypto from 'crypto'
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-)
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -17,7 +12,11 @@ export default async function handler(req, res) {
   try {
     const { title, description, price, contact_email } = req.body
 
-    const edit_token = crypto.randomBytes(16).toString('hex')
+    if (!title || !description || !contact_email) {
+      return res.status(400).json({ error: 'Missing required fields' })
+    }
+
+    const edit_token = crypto.randomBytes(32).toString('hex')
 
     const { error } = await supabase.from('listings').insert([
       {
@@ -31,24 +30,34 @@ export default async function handler(req, res) {
     ])
 
     if (error) {
-      return res.status(500).json({ error })
+      return res.status(500).json({ error: 'DB insert failed' })
     }
 
-    const editLink = `https://pickupdetails.com/edit/${edit_token}`
+    const editLink = `https://pickupdetails.com/edit?token=${edit_token}`
 
-    await resend.emails.send({
-      from: 'onboarding@resend.dev',
-      to: contact_email,
-      subject: 'Your listing is live',
-      html: `
-        <p>Your listing has been created.</p>
-        <p>Edit it here:</p>
-        <a href="${editLink}">${editLink}</a>
-      `
+    let emailSent = true
+
+    try {
+      await resend.emails.send({
+        from: 'PickupDetails <onboarding@resend.dev>',
+        to: contact_email,
+        subject: 'Your listing is live',
+        html: `
+          <p>Your listing has been created.</p>
+          <p>Edit it here:</p>
+          <a href="${editLink}">${editLink}</a>
+          <p>Save this email to manage your listing.</p>
+        `
+      })
+    } catch (e) {
+      emailSent = false
+    }
+
+    return res.status(200).json({
+      success: true,
+      emailSent
     })
-
-    return res.status(200).json({ success: true })
   } catch (err) {
-    return res.status(500).json({ error: err.message })
+    return res.status(500).json({ error: 'Server error' })
   }
 }
