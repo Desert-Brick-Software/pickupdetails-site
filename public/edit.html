@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Edit Listing</title>
+</head>
+<body>
+  <h1>Edit Listing</h1>
+  <pre id="output">Loading...</pre>
+
+  <script>
+    const params = new URLSearchParams(window.location.search)
+    const token = params.get('token')
+
+    if (!token) {
+      document.getElementById('output').innerText = 'No token provided'
+    } else {
+      fetch('https://bsxodiwxpuubcfxaizsg.supabase.co/rest/v1/listings?edit_token=eq.' + token, {
+        headers: {
+          apikey: 'sb_publishable_tH_bBovzL5a-Z_pay7sJUA_TLY8G4nV',
+          Authorization: 'Bearer YOUR_ANON_KEY_HERE'
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('output').innerText = JSON.stringify(data, null, 2)
+      })
+      .catch(() => {
+        document.getElementById('output').innerText = 'Error loading listing'
+      })
+    }
+  </script>
+</body>
+</html>
