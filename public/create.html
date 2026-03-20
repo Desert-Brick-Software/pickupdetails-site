@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Create Listing</title>
+</head>
+<body>
+  <h1>Create Listing</h1>
+
+  <input id="name" placeholder="First Name"><br><br>
+  <input id="email" placeholder="Email"><br><br>
+  <textarea id="description" placeholder="Describe your item"></textarea><br><br>
+
+  <input id="images" type="file" multiple accept="image/*"><br><br>
+
+  <button onclick="submitListing()">Submit</button>
+
+  <p id="status"></p>
+
+  <script>
+    async function submitListing() {
+      const name = document.getElementById('name').value
+      const email = document.getElementById('email').value
+      const description = document.getElementById('description').value
+      const files = document.getElementById('images').files
+
+      if (files.length > 3) {
+        document.getElementById('status').innerText = 'Max 3 images'
+        return
+      }
+
+      document.getElementById('status').innerText = 'Submitting...'
+
+      // TEMP: no image upload yet
+      const res = await fetch('/api/create-listing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: name, // temporary mapping
+          description,
+          price: '',
+          contact_email: email,
+          image_urls: []
+        })
+      })
+
+      const data = await res.json()
+
+      if (data.success) {
+        document.getElementById('status').innerText = 'Listing created!'
+      } else {
+        document.getElementById('status').innerText = 'Error'
+      }
+    }
+  </script>
+</body>
+</html>
