@@ -85,13 +85,17 @@
       font-weight: bold;
     }
 
+    /* FIXED CHECKBOX */
     .checkbox {
       margin-top: 20px;
       font-size: 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
     }
 
     .checkbox input {
-      margin-right: 6px;
+      margin-top: 3px;
     }
 
     .checkbox a {
@@ -165,7 +169,7 @@
 
       <!-- LOCATION -->
       <label for="location">Location</label>
-      <div class="helper">Use a general area — exact meetup can coordinate with buyer later</div>
+      <div class="helper">Use a general area — exact meetup can be coordinated with the buyer later</div>
       <input type="text" id="location" name="location" placeholder="City, neighborhood, etc." />
 
       <!-- DESCRIPTION -->
@@ -178,8 +182,8 @@
 
       <!-- POLICY CHECKBOX -->
       <div class="checkbox">
+        <input type="checkbox" required />
         <label>
-          <input type="checkbox" required />
           I have read and agree to the 
           <a href="#" target="_blank">Privacy Policy</a> 
           and 
