@@ -35,6 +35,22 @@
       text-align: center;
     }
 
+    .back-home {
+      text-align: center;
+      padding: 16px 24px 0;
+    }
+
+    .back-home a {
+      font-size: 14px;
+      color: #555;
+      text-decoration: none;
+    }
+
+    .back-home a:hover {
+      color: #2d4f73;
+      text-decoration: underline;
+    }
+
     /* FORM CONTAINER */
     .container {
       max-width: 520px;
@@ -64,6 +80,15 @@
       margin-bottom: 6px;
     }
 
+    .privacy-notice {
+      background: #f0f4f8;
+      border: 1px solid #d8e2ec;
+      border-radius: 4px;
+      padding: 10px 12px;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+
     input, textarea {
       width: 100%;
       padding: 10px;
@@ -88,29 +113,39 @@
       font-weight: bold;
     }
 
-    /* FIXED CHECKBOX */
-    .checkbox {
+    /* AGREEMENT CHECKBOX */
+    .agreement {
       margin-top: 20px;
-      font-size: 13px;
+      text-align: center;
     }
 
-    .checkbox label {
-      display: flex;
-      align-items: flex-start;
+    .agreement-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
       gap: 8px;
+      max-width: 100%;
+      font-size: 13px;
+      font-weight: normal;
+      margin: 0;
       cursor: pointer;
+      line-height: 1.4;
     }
 
-    .checkbox input {
-      margin-top: 3px;
+    .agreement-label input[type="checkbox"] {
+      width: auto;
+      flex-shrink: 0;
+      margin: 0;
+      padding: 0;
     }
 
-    .checkbox a {
+    .agreement-label a {
       color: #0077cc;
       text-decoration: none;
     }
 
-    .checkbox a:hover {
+    .agreement-label a:hover {
       text-decoration: underline;
     }
 
@@ -156,6 +191,10 @@
     </div>
   </div>
 
+  <div class="back-home">
+    <a href="/">← Back to Home</a>
+  </div>
+
   <!-- FORM -->
   <div class="container">
     <h1>Create Listing</h1>
@@ -185,18 +224,17 @@
       <label for="description">Describe your item</label>
       <textarea id="description" name="description" placeholder="Condition, price (optional), anything buyers should know..." required></textarea>
 
+      <div class="helper privacy-notice">Privacy Notice: Do not include sensitive personal information such as Social Security numbers, financial account information, passwords, government identification numbers, medical information, or other confidential information in listings, messages, or photos.</div>
+
       <!-- FILE UPLOAD -->
       <div class="file-label">Upload photos (up to 3)</div>
       <input type="file" id="images" name="images" accept="image/*" multiple />
 
       <!-- POLICY CHECKBOX -->
-      <div class="checkbox">
-        <label>
+      <div class="agreement">
+        <label class="agreement-label">
           <input type="checkbox" required />
-          I have read and agree to the 
-          <a href="#" target="_blank">Privacy Policy</a> 
-          and 
-          <a href="#" target="_blank">Terms of Service</a>.
+          <span>I have read and agree to the <a href="#" target="_blank">Privacy Policy</a> and <a href="#" target="_blank">Terms of Service</a>.</span>
         </label>
       </div>
 

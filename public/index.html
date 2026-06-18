@@ -164,6 +164,27 @@
       color: #888;
     }
 
+    footer p {
+      margin: 0;
+    }
+
+    footer p + p {
+      margin-top: 8px;
+    }
+
+    footer a {
+      color: #2d4f73;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    footer .footer-sep {
+      margin: 0 6px;
+    }
+
     @media (max-width: 600px) {
       .hero {
         padding: 32px 20px 24px;
@@ -253,7 +274,10 @@
   </main>
 
   <footer>
-    &copy; PickupDetails
+    <p>&copy; 2026 PickupDetails &middot; A product of Desert Brick Software LLC</p>
+    <p class="footer-links">
+      <a href="/legal/privacy-policy/">Privacy Policy</a><span class="footer-sep">|</span><a href="/legal/terms/">Terms of Service</a>
+    </p>
   </footer>
 
 </body>
