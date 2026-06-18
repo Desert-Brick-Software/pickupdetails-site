@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PickupDetails — Better buyer inquiries for marketplace sellers</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 16px 24px;
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+      gap: 16px;
+    }
+
+    .logo {
+      height: 48px;
+    }
+
+    .tagline {
+      font-size: 18px;
+      font-weight: 500;
+      color: #555;
+      text-align: center;
+    }
+
+    .hero {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px 32px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0 0 16px;
+      font-size: 28px;
+      line-height: 1.3;
+      color: #222;
+    }
+
+    .hero p {
+      margin: 0 0 28px;
+      font-size: 17px;
+      color: #444;
+    }
+
+    .cta-button {
+      display: inline-block;
+      padding: 14px 32px;
+      font-size: 16px;
+      font-weight: 600;
+      background-color: #2d4f73;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+    }
+
+    .cta-button:hover {
+      background-color: #1f3a55;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px 48px;
+    }
+
+    section {
+      background: white;
+      padding: 28px 24px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    section h2 {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #222;
+    }
+
+    section p {
+      margin: 0;
+      color: #444;
+    }
+
+    .steps {
+      list-style: none;
+      margin: 16px 0 0;
+      padding: 0;
+      counter-reset: step;
+    }
+
+    .steps li {
+      position: relative;
+      padding-left: 44px;
+      margin-bottom: 20px;
+    }
+
+    .steps li:last-child {
+      margin-bottom: 0;
+    }
+
+    .steps li::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 28px;
+      height: 28px;
+      background-color: #2d4f73;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .steps li strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #222;
+    }
+
+    .steps li span {
+      font-size: 15px;
+      color: #555;
+    }
+
+    .notice {
+      background: #f0f4f8;
+      border: 1px solid #d8e2ec;
+      box-shadow: none;
+    }
+
+    .notice p {
+      font-size: 14px;
+      color: #555;
+      margin: 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    @media (max-width: 600px) {
+      .hero {
+        padding: 32px 20px 24px;
+      }
+
+      .hero h1 {
+        font-size: 24px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      main {
+        padding: 0 16px 32px;
+      }
+
+      section {
+        padding: 22px 18px;
+      }
+
+      .tagline {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <img src="logo.png" alt="PickupDetails logo" class="logo" />
+    <div class="tagline">Organize buyer inquiries. Skip the chaos.</div>
+  </header>
+
+  <div class="hero">
+    <h1>A simpler way to share item details and handle buyer messages</h1>
+    <p>
+      PickupDetails helps marketplace sellers create a simple listing page and collect
+      better buyer inquiries without repeatedly answering the same questions in DMs.
+    </p>
+    <a href="/create.html" class="cta-button">Create a Listing</a>
+  </div>
+
+  <main>
+
+    <section>
+      <h2>Who it's for</h2>
+      <p>
+        People selling items through Facebook Marketplace, OfferUp, Craigslist, local groups,
+        or similar platforms who want a cleaner way to share details and manage buyer interest.
+      </p>
+    </section>
+
+    <section>
+      <h2>Why use PickupDetails</h2>
+      <p>
+        The goal is better buyer interactions, fewer repetitive messages, and a cleaner way
+        to share item details — so you spend less time in back-and-forth DMs and more time
+        on the sale.
+      </p>
+    </section>
+
+    <section>
+      <h2>How it works</h2>
+      <ol class="steps">
+        <li>
+          <strong>Create your listing</strong>
+          <span>Add your item details and photos to build a shareable PickupDetails page.</span>
+        </li>
+        <li>
+          <strong>Share your PickupDetails link</strong>
+          <span>Send the link to interested buyers instead of retyping the same info in every message.</span>
+        </li>
+        <li>
+          <strong>Receive organized buyer inquiries</strong>
+          <span>PickupDetails is being built to send structured buyer inquiries to your email, so common questions are answered up front.</span>
+        </li>
+      </ol>
+    </section>
+
+    <section class="notice">
+      <p>
+        PickupDetails is currently in early testing. Features may change as the product improves.
+      </p>
+    </section>
+
+  </main>
+
+  <footer>
+    &copy; PickupDetails
+  </footer>
+
+</body>
+</html>
