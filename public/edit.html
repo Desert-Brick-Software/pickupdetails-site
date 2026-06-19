@@ -1,33 +1,324 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Edit Listing</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Listing | Pickup Details</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 40px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 140px;
+    }
+
+    input:disabled,
+    textarea:disabled,
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background-color: #2d4f73;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: #1f3a55;
+    }
+
+    .btn-secondary {
+      background-color: #e8e8e8;
+      color: #333;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background-color: #d8d8d8;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .message.error {
+      background: #fdecea;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .message.success {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      color: #1b5e20;
+    }
+
+    .message.info {
+      background: #f0f4f8;
+      border: 1px solid #d8e2ec;
+      color: #2d4f73;
+    }
+
+    .sold-banner {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      border-radius: 4px;
+      padding: 12px;
+      margin-bottom: 20px;
+      color: #1b5e20;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>Edit Listing</h1>
-  <pre id="output">Loading...</pre>
+  <div class="container">
+    <h1>Edit Listing</h1>
+
+    <div id="loading">Loading...</div>
+
+    <div id="error-state" class="message error hidden"></div>
+
+    <div id="edit-form" class="hidden">
+      <div id="sold-banner" class="sold-banner hidden">This listing has been marked as sold.</div>
+
+      <form id="listing-form">
+        <label for="title">Title</label>
+        <input type="text" id="title" name="title" />
+
+        <label for="description">Description</label>
+        <textarea id="description" name="description" required></textarea>
+
+        <label for="price">Price</label>
+        <input type="text" id="price" name="price" placeholder="e.g. 50 or Free" />
+
+        <div class="actions">
+          <button type="submit" id="save-btn" class="btn-primary">Save Changes</button>
+          <button type="button" id="sold-btn" class="btn-secondary">Mark as Sold</button>
+        </div>
+      </form>
+
+      <div id="status-message" class="message hidden"></div>
+    </div>
+  </div>
 
   <script>
     const params = new URLSearchParams(window.location.search)
     const token = params.get('token')
 
-    if (!token) {
-      document.getElementById('output').innerText = 'No token provided'
-    } else {
-      fetch('https://bsxodiwxpuubcfxaizsg.supabase.co/rest/v1/listings?edit_token=eq.' + token, {
-        headers: {
-          apikey: 'sb_publishable_tH_bBovzL5a-Z_pay7sJUA_TLY8G4nV',
-          Authorization: 'Bearer sb_publishable_tH_bBovzL5a-Z_pay7sJUA_TLY8G4nV'
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById('output').innerText = JSON.stringify(data, null, 2)
-      })
-      .catch(() => {
-        document.getElementById('output').innerText = 'Error loading listing'
-      })
+    const loadingEl = document.getElementById('loading')
+    const errorStateEl = document.getElementById('error-state')
+    const editFormEl = document.getElementById('edit-form')
+    const soldBannerEl = document.getElementById('sold-banner')
+    const listingFormEl = document.getElementById('listing-form')
+    const titleEl = document.getElementById('title')
+    const descriptionEl = document.getElementById('description')
+    const priceEl = document.getElementById('price')
+    const saveBtnEl = document.getElementById('save-btn')
+    const soldBtnEl = document.getElementById('sold-btn')
+    const statusMessageEl = document.getElementById('status-message')
+
+    function showError(message) {
+      loadingEl.classList.add('hidden')
+      editFormEl.classList.add('hidden')
+      errorStateEl.textContent = message
+      errorStateEl.classList.remove('hidden')
     }
+
+    function showStatus(message, type) {
+      statusMessageEl.textContent = message
+      statusMessageEl.className = 'message ' + type
+      statusMessageEl.classList.remove('hidden')
+    }
+
+    function clearStatus() {
+      statusMessageEl.classList.add('hidden')
+      statusMessageEl.textContent = ''
+    }
+
+    function setSoldState() {
+      soldBannerEl.classList.remove('hidden')
+      titleEl.disabled = true
+      descriptionEl.disabled = true
+      priceEl.disabled = true
+      saveBtnEl.disabled = true
+      soldBtnEl.disabled = true
+    }
+
+    function populateForm(listing) {
+      titleEl.value = listing.title || ''
+      descriptionEl.value = listing.description || ''
+      priceEl.value = listing.price != null ? String(listing.price) : ''
+
+      if (listing.status === 'sold') {
+        setSoldState()
+      }
+    }
+
+    if (!token) {
+      showError('No edit token provided. Use the link from your listing confirmation email.')
+    } else {
+      fetch('/api/get-listing?token=' + encodeURIComponent(token))
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, status: res.status, data: data }
+          })
+        })
+        .then(function (result) {
+          loadingEl.classList.add('hidden')
+
+          if (!result.ok) {
+            if (result.status === 404) {
+              showError('Listing not found. Check that you used the correct edit link.')
+            } else {
+              showError(result.data.error || 'Unable to load listing.')
+            }
+            return
+          }
+
+          editFormEl.classList.remove('hidden')
+          populateForm(result.data.listing)
+        })
+        .catch(function () {
+          showError('Unable to load listing. Please try again.')
+        })
+    }
+
+    listingFormEl.addEventListener('submit', function (e) {
+      e.preventDefault()
+      clearStatus()
+      saveBtnEl.disabled = true
+
+      fetch('/api/update-listing', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          edit_token: token,
+          title: titleEl.value,
+          description: descriptionEl.value,
+          price: priceEl.value
+        })
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data }
+          })
+        })
+        .then(function (result) {
+          if (!result.ok) {
+            showStatus(result.data.error || 'Failed to save changes.', 'error')
+            saveBtnEl.disabled = false
+            return
+          }
+          showStatus('Changes saved.', 'success')
+          saveBtnEl.disabled = false
+        })
+        .catch(function () {
+          showStatus('Failed to save changes. Please try again.', 'error')
+          saveBtnEl.disabled = false
+        })
+    })
+
+    soldBtnEl.addEventListener('click', function () {
+      if (!confirm('Mark this listing as sold? You will not be able to edit it afterward.')) {
+        return
+      }
+
+      clearStatus()
+      soldBtnEl.disabled = true
+      saveBtnEl.disabled = true
+
+      fetch('/api/mark-sold', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ edit_token: token })
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data }
+          })
+        })
+        .then(function (result) {
+          if (!result.ok) {
+            showStatus(result.data.error || 'Failed to mark listing as sold.', 'error')
+            soldBtnEl.disabled = false
+            saveBtnEl.disabled = false
+            return
+          }
+          setSoldState()
+          showStatus('Listing marked as sold.', 'success')
+        })
+        .catch(function () {
+          showStatus('Failed to mark listing as sold. Please try again.', 'error')
+          soldBtnEl.disabled = false
+          saveBtnEl.disabled = false
+        })
+    })
   </script>
 </body>
 </html>
