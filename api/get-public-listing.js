@@ -23,14 +23,13 @@ export default async function handler(req, res) {
       .from('listings')
       .select(SAFE_FIELDS)
       .eq('id', id.trim())
-      .eq('status', 'active')
       .maybeSingle()
 
     if (error) {
       return res.status(500).json({ error: 'Failed to load listing' })
     }
 
-    if (!data) {
+    if (!data || String(data.status).toLowerCase() !== 'active') {
       return res.status(404).json({ error: 'Listing not found' })
     }
 
