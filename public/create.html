@@ -161,8 +161,37 @@
       cursor: pointer;
     }
 
-    button:hover {
+    button:hover:not(:disabled) {
       background-color: #1f3a55;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .message.error {
+      background: #fdecea;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .message.success {
+      background: #e8f5e9;
+      border: 1px solid #c8e6c9;
+      color: #1b5e20;
+    }
+
+    .message.hidden {
+      display: none;
     }
 
     .footer-note {
@@ -199,7 +228,7 @@
   <div class="container">
     <h1>Create Listing</h1>
 
-    <form>
+    <form id="create-form">
 
       <!-- TITLE -->
       <label for="title">Title (optional)</label>
@@ -239,7 +268,9 @@
       </div>
 
       <!-- SUBMIT -->
-      <button type="submit" disabled>Coming Soon</button>
+      <button type="submit" id="submit-btn">Create Listing</button>
+
+      <div id="status-message" class="message hidden"></div>
 
       <!-- FOOTER -->
       <div class="footer-note">
@@ -248,6 +279,78 @@
 
     </form>
   </div>
+
+  <script>
+    const createFormEl = document.getElementById('create-form')
+    const titleEl = document.getElementById('title')
+    const emailEl = document.getElementById('email')
+    const descriptionEl = document.getElementById('description')
+    const submitBtnEl = document.getElementById('submit-btn')
+    const statusMessageEl = document.getElementById('status-message')
+
+    function showStatus(message, type) {
+      statusMessageEl.innerHTML = message
+      statusMessageEl.className = 'message ' + type
+      statusMessageEl.classList.remove('hidden')
+    }
+
+    function clearStatus() {
+      statusMessageEl.classList.add('hidden')
+      statusMessageEl.innerHTML = ''
+    }
+
+    createFormEl.addEventListener('submit', function (e) {
+      e.preventDefault()
+      clearStatus()
+
+      const title = titleEl.value.trim()
+      const description = descriptionEl.value.trim()
+      const contact_email = emailEl.value.trim()
+
+      if (!description || !contact_email) {
+        showStatus('Please fill in all required fields.', 'error')
+        return
+      }
+
+      const payload = {
+        title: title || description.slice(0, 100),
+        description: description,
+        contact_email: contact_email
+      }
+
+      submitBtnEl.disabled = true
+
+      fetch('/api/create-listing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data }
+          })
+        })
+        .then(function (result) {
+          if (!result.ok) {
+            showStatus(result.data.error || 'Failed to create listing.', 'error')
+            submitBtnEl.disabled = false
+            return
+          }
+
+          var message = 'Listing created successfully.'
+          if (result.data.emailSent === false) {
+            message += ' We could not send the confirmation email — check your inbox settings or try again later.'
+          } else {
+            message += ' A confirmation email with your edit link has been sent.'
+          }
+          showStatus(message, 'success')
+        })
+        .catch(function () {
+          showStatus('Failed to create listing. Please try again.', 'error')
+          submitBtnEl.disabled = false
+        })
+    })
+  </script>
 
 </body>
 </html>
