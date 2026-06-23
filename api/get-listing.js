@@ -15,7 +15,7 @@ export default async function handler(req, res) {
 
   const supabaseAdmin = getSupabaseAdmin()
   if (!supabaseAdmin) {
-    return res.status(503).json({ error: 'Service unavailable' })
+    return res.status(503).json({ error: 'Service unavailable: missing Supabase admin client' })
   }
 
   try {
@@ -26,7 +26,7 @@ export default async function handler(req, res) {
       .maybeSingle()
 
     if (error) {
-      return res.status(500).json({ error: 'Failed to load listing' })
+      return res.status(500).json({ error: 'Supabase query failed' })
     }
 
     if (!data) {
