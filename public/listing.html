@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listing | Pickup Details</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      color: #333;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 40px auto;
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      font-size: 20px;
+      font-weight: bold;
+      color: #2d4f73;
+      margin-bottom: 20px;
+    }
+
+    .description {
+      white-space: pre-wrap;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .images {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .images img {
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #e5e5e5;
+    }
+
+    .message {
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .message.error {
+      background: #fdecea;
+      border: 1px solid #f5c6cb;
+      color: #721c24;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        margin: 20px;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="loading">Loading...</div>
+    <div id="error-state" class="message error hidden"></div>
+
+    <div id="listing-content" class="hidden">
+      <h1 id="title"></h1>
+      <div id="price" class="price"></div>
+      <div id="images" class="images"></div>
+      <div id="description" class="description"></div>
+    </div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search)
+    const listingId = params.get('id')
+
+    const loadingEl = document.getElementById('loading')
+    const errorStateEl = document.getElementById('error-state')
+    const listingContentEl = document.getElementById('listing-content')
+    const titleEl = document.getElementById('title')
+    const priceEl = document.getElementById('price')
+    const imagesEl = document.getElementById('images')
+    const descriptionEl = document.getElementById('description')
+
+    function showError(message) {
+      loadingEl.classList.add('hidden')
+      listingContentEl.classList.add('hidden')
+      errorStateEl.textContent = message
+      errorStateEl.classList.remove('hidden')
+    }
+
+    function formatPrice(price) {
+      if (price == null || price === '') {
+        return ''
+      }
+      return String(price)
+    }
+
+    function renderImages(imageUrls) {
+      imagesEl.innerHTML = ''
+      if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+        return
+      }
+      imageUrls.forEach(function (url) {
+        if (!url) {
+          return
+        }
+        const img = document.createElement('img')
+        img.src = url
+        img.alt = 'Listing photo'
+        imagesEl.appendChild(img)
+      })
+    }
+
+    if (!listingId) {
+      showError('No listing ID provided.')
+    } else {
+      fetch('/api/get-public-listing?id=' + encodeURIComponent(listingId))
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, status: res.status, data: data }
+          })
+        })
+        .then(function (result) {
+          loadingEl.classList.add('hidden')
+
+          if (!result.ok) {
+            if (result.status === 404) {
+              showError('Listing not found or no longer available.')
+            } else {
+              showError(result.data.error || 'Unable to load listing.')
+            }
+            return
+          }
+
+          const listing = result.data.listing
+          titleEl.textContent = listing.title || 'Untitled Listing'
+          priceEl.textContent = formatPrice(listing.price)
+          descriptionEl.textContent = listing.description || ''
+          renderImages(listing.image_urls)
+
+          listingContentEl.classList.remove('hidden')
+        })
+        .catch(function () {
+          showError('Unable to load listing. Please try again.')
+        })
+    }
+  </script>
+</body>
+</html>
