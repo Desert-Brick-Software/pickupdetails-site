@@ -228,7 +228,7 @@
   <div class="container">
     <h1>Create Listing</h1>
 
-    <form id="create-form">
+    <form id="create-form" novalidate>
 
       <!-- TITLE -->
       <label for="title">Title (optional)</label>
@@ -262,7 +262,7 @@
       <!-- POLICY CHECKBOX -->
       <div class="agreement">
         <label class="agreement-label">
-          <input type="checkbox" required />
+          <input type="checkbox" id="terms-agree" required />
           <span>I have read and agree to the <a href="/legal/privacy-policy/" target="_blank">Privacy Policy</a> and <a href="/legal/terms/" target="_blank">Terms of Service</a>.</span>
         </label>
       </div>
@@ -283,8 +283,10 @@
   <script>
     const createFormEl = document.getElementById('create-form')
     const titleEl = document.getElementById('title')
+    const nameEl = document.getElementById('name')
     const emailEl = document.getElementById('email')
     const descriptionEl = document.getElementById('description')
+    const termsEl = document.getElementById('terms-agree')
     const submitBtnEl = document.getElementById('submit-btn')
     const statusMessageEl = document.getElementById('status-message')
 
@@ -304,11 +306,17 @@
       clearStatus()
 
       const title = titleEl.value.trim()
+      const name = nameEl.value.trim()
       const description = descriptionEl.value.trim()
       const contact_email = emailEl.value.trim()
 
-      if (!description || !contact_email) {
+      if (!name || !description || !contact_email) {
         showStatus('Please fill in all required fields.', 'error')
+        return
+      }
+
+      if (!termsEl.checked) {
+        showStatus('Please agree to the Privacy Policy and Terms of Service.', 'error')
         return
       }
 
@@ -328,6 +336,8 @@
         .then(function (res) {
           return res.json().then(function (data) {
             return { ok: res.ok, data: data }
+          }).catch(function () {
+            return { ok: false, data: { error: 'Failed to create listing.' } }
           })
         })
         .then(function (result) {
