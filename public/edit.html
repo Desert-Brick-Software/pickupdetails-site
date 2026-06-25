@@ -190,6 +190,17 @@
       errorStateEl.classList.remove('hidden')
     }
 
+    function formatApiError(data) {
+      var message = data.error || 'Unable to load listing.'
+      if (data.detail) {
+        message += ' — ' + data.detail
+      }
+      if (data.code) {
+        message += ' [' + data.code + ']'
+      }
+      return message
+    }
+
     function showStatus(message, type) {
       statusMessageEl.textContent = message
       statusMessageEl.className = 'message ' + type
@@ -236,7 +247,7 @@
             if (result.status === 404) {
               showError('Listing not found. Check that you used the correct edit link.')
             } else {
-              showError(result.data.error || 'Unable to load listing.')
+              showError(formatApiError(result.data))
             }
             return
           }

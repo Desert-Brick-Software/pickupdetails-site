@@ -26,7 +26,11 @@ export default async function handler(req, res) {
       .maybeSingle()
 
     if (error) {
-      return res.status(500).json({ error: 'Supabase query failed' })
+      return res.status(500).json({
+        error: 'Supabase query failed',
+        detail: error.message,
+        code: error.code || null
+      })
     }
 
     if (!data) {
