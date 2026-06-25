@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from './lib/supabase'
+import { supabase } from './lib/supabase'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -11,15 +11,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing edit_token' })
   }
 
-  const supabaseAdmin = getSupabaseAdmin()
-  if (!supabaseAdmin) {
-    return res.status(503).json({ error: 'Service unavailable' })
-  }
-
   try {
-    const { data: existing, error: lookupError } = await supabaseAdmin
+    const { data: existing, error: lookupError } = await supabase
       .from('listings')
-      .select('id')
+      .select('id, status')
       .eq('edit_token', edit_token.trim())
       .maybeSingle()
 
@@ -31,7 +26,11 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Listing not found' })
     }
 
-    const { error: updateError } = await supabaseAdmin
+    if (String(existing.status).toLowerCase() === 'sold') {
+      return res.status(403).json({ error: 'Listing is already marked as sold' })
+    }
+
+    const { error: updateError } = await supabase
       .from('listings')
       .update({ status: 'sold' })
       .eq('edit_token', edit_token.trim())

@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from './lib/supabase'
+import { supabase } from './lib/supabase'
 
 const SAFE_FIELDS = 'id, title, description, price, image_urls, status, created_at'
 
@@ -13,13 +13,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing token' })
   }
 
-  const supabaseAdmin = getSupabaseAdmin()
-  if (!supabaseAdmin) {
-    return res.status(503).json({ error: 'Service unavailable: missing Supabase admin client' })
-  }
-
   try {
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await supabase
       .from('listings')
       .select(SAFE_FIELDS)
       .eq('edit_token', token.trim())
