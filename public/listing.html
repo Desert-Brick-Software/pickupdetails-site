@@ -67,7 +67,7 @@
     .listing-grid {
       display: flex;
       flex-direction: column;
-      gap: 28px;
+      gap: 26px;
     }
 
     .listing-main {
@@ -80,7 +80,7 @@
     }
 
     h1 {
-      margin: 0 0 12px;
+      margin: 0 0 10px;
       font-size: 22px;
       line-height: 1.3;
       color: #222;
@@ -90,7 +90,7 @@
       font-size: 22px;
       font-weight: bold;
       color: #2d4f73;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .status-badge {
@@ -103,7 +103,7 @@
       font-weight: 700;
       letter-spacing: 0.02em;
       white-space: nowrap;
-      margin-bottom: 26px;
+      margin-bottom: 22px;
     }
 
     .status-badge::before {
@@ -142,7 +142,7 @@
     }
 
     .section {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .section:last-child {
@@ -155,7 +155,7 @@
       color: #2d4f73;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     .section-value {
@@ -269,7 +269,7 @@
 
     .bottom-cta {
       margin-top: 28px;
-      padding: 22px 28px 18px;
+      padding: 14px 28px 12px;
       background: #e8eef4;
       border-radius: 10px;
       width: 100%;
@@ -278,7 +278,7 @@
     .bottom-cta-row {
       display: flex;
       align-items: flex-start;
-      gap: 24px;
+      gap: 20px;
     }
 
     .bottom-cta-icon {
@@ -291,50 +291,51 @@
       flex: 1;
       text-align: left;
       min-width: 0;
-      padding-top: 2px;
     }
 
     .bottom-cta-heading {
-      margin: 0 0 6px;
+      margin: 0 0 4px;
       font-size: 20px;
       font-weight: 600;
       color: #222;
       line-height: 1.25;
     }
 
+    .bottom-cta-body {
+      margin: 0 0 6px;
+      font-size: 14px;
+      line-height: 1.45;
+      color: #555;
+    }
+
     .bottom-cta-link {
       display: inline-block;
-      margin: 0 0 8px;
+      margin: 0;
       font-size: 16px;
-      font-weight: 600;
+      font-weight: 700;
       color: #2d4f73;
       text-decoration: none;
       line-height: 1.4;
     }
 
     .bottom-cta-link:hover {
+      color: #1f3a55;
       text-decoration: underline;
-    }
-
-    .bottom-cta-body {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.5;
-      color: #555;
     }
 
     .bottom-cta-divider {
       border-top: 1px solid rgba(45, 79, 115, 0.14);
-      margin: 16px 0 12px;
+      margin: 8px 0 6px;
     }
 
     .trust-strip {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 8px 24px;
+      gap: 6px 24px;
       font-size: 13px;
-      color: #5a6573;
+      font-weight: 500;
+      color: #4f5966;
     }
 
     .trust-item {
@@ -410,17 +411,17 @@
 
       h1 {
         font-size: 26px;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
       }
 
       .price {
         font-size: 24px;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
       }
 
       .status-badge {
         font-size: 14px;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
       }
 
       .carousel-viewport img {
@@ -475,11 +476,11 @@
       }
 
       .bottom-cta {
-        padding: 18px 18px 14px;
+        padding: 14px 18px 12px;
       }
 
       .bottom-cta-row {
-        gap: 16px;
+        gap: 14px;
       }
 
       .bottom-cta-icon {
@@ -488,27 +489,27 @@
 
       .bottom-cta-heading {
         font-size: 18px;
+        margin-bottom: 3px;
+      }
+
+      .bottom-cta-body {
+        font-size: 13px;
+        line-height: 1.4;
         margin-bottom: 5px;
       }
 
       .bottom-cta-link {
         font-size: 15px;
-        margin-bottom: 6px;
-      }
-
-      .bottom-cta-body {
-        font-size: 13px;
-        line-height: 1.45;
       }
 
       .bottom-cta-divider {
-        margin: 14px 0 10px;
+        margin: 8px 0 6px;
       }
 
       .trust-strip {
         flex-direction: column;
         align-items: center;
-        gap: 6px;
+        gap: 5px;
       }
 
       .page {
@@ -578,8 +579,8 @@
         <img src="checklist.png" alt="" class="bottom-cta-icon" aria-hidden="true" />
         <div class="bottom-cta-content">
           <h2 class="bottom-cta-heading">Selling something online?</h2>
-          <a href="create.html" class="bottom-cta-link">Create your free PickupDetails listing →</a>
           <p class="bottom-cta-body">Share your pickup details once instead of answering the same questions over and over.</p>
+          <a href="create.html" class="bottom-cta-link">Create your free PickupDetails listing →</a>
         </div>
       </div>
       <div class="bottom-cta-divider"></div>
