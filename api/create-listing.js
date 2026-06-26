@@ -102,6 +102,58 @@ async function uploadListingImages(listingId, imageFiles) {
   return urls
 }
 
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function buildConfirmationEmailHtml({ title, description, publicUrl, editUrl }) {
+  const marketplacePost = `${title}
+
+${description}
+
+To make pickup easier, I've posted availability, location details, and answers to common questions here:
+
+${publicUrl}
+
+If you're interested, please review the details and submit a contact request through the listing.`
+
+  return `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a1a1a; line-height: 1.5; max-width: 600px;">
+      <p style="font-size: 18px; font-weight: 600; margin: 0 0 24px;">Your PickupDetails listing has been created successfully.</p>
+
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Share Your Listing</h2>
+      <p style="margin: 0 0 8px;">Share your listing link anywhere you're selling — Facebook Marketplace, Craigslist, OfferUp, and more. Buyers can review pickup information, availability, and other details before contacting you.</p>
+      <p style="margin: 0 0 24px;"><a href="${publicUrl}" style="color: #2563eb;">${publicUrl}</a></p>
+
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Suggested Marketplace Post</h2>
+      <div style="background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 6px; padding: 16px; margin: 0 0 24px; white-space: pre-wrap; font-size: 14px;">${escapeHtml(marketplacePost)}</div>
+
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Manage Your Listing</h2>
+      <p style="margin: 0 0 8px;"><strong>Do not share this link.</strong> Anyone with it can edit your listing.</p>
+      <p style="margin: 0 0 8px;"><a href="${editUrl}" style="color: #2563eb;">${editUrl}</a></p>
+      <p style="margin: 0 0 24px;">Save this email so you can edit your listing later.</p>
+
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">What is PickupDetails?</h2>
+      <p style="margin: 0 0 8px;">PickupDetails helps sellers organize pickup information in one place so buyers can review important details before reaching out.</p>
+      <ul style="margin: 0 0 24px; padding-left: 20px;">
+        <li>Less back-and-forth</li>
+        <li>Fewer misunderstandings</li>
+        <li>More serious inquiries</li>
+      </ul>
+
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Help Us Grow</h2>
+      <p style="margin: 0 0 24px;">Know someone who sells online? Share PickupDetails with them: <a href="https://pickupdetails.com" style="color: #2563eb;">https://pickupdetails.com</a></p>
+
+      <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;" />
+      <p style="margin: 0; font-size: 13px; color: #666;">Built by Desert Brick Software</p>
+    </div>
+  `
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -189,16 +241,8 @@ export default async function handler(req, res) {
       await resend.emails.send({
         from: 'PickupDetails <onboarding@resend.dev>',
         to: contact_email,
-        subject: 'Your listing is live',
-        html: `
-          <p>Your listing has been created.</p>
-          <p>Share your public listing:</p>
-          <a href="${publicUrl}">${publicUrl}</a>
-          <p>Private edit link (do not share this):</p>
-          <a href="${editUrl}">${editUrl}</a>
-          <p><strong>Warning:</strong> Do not share the edit link. Anyone with it can change your listing.</p>
-          <p>Save this email to manage your listing.</p>
-        `
+        subject: 'Your PickupDetails listing is ready',
+        html: buildConfirmationEmailHtml({ title, description, publicUrl, editUrl })
       })
     } catch {
       emailSent = false
