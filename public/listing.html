@@ -816,10 +816,12 @@
           <label for="contact-buyer-phone">Your phone <span style="font-weight: normal; color: #777;">(optional)</span></label>
           <div class="contact-helper">Only include your phone number if you're okay with the seller seeing it and contacting you by text or phone.</div>
           <input type="tel" id="contact-buyer-phone" name="buyer_phone" autocomplete="tel" />
-          <label class="contact-ack-label contact-phone-consent">
-            <input type="checkbox" id="contact-phone-consent" name="phone_contact_consent" />
-            <span>I understand the seller may use this phone number to contact me about this item.</span>
-          </label>
+          <div id="contact-phone-consent-wrap" class="contact-phone-consent hidden">
+            <label class="contact-ack-label">
+              <input type="checkbox" id="contact-phone-consent" name="phone_contact_consent" />
+              <span>I understand the seller may use this phone number to contact me about this item.</span>
+            </label>
+          </div>
 
           <label for="contact-buyer-message">Message</label>
           <textarea id="contact-buyer-message" name="buyer_message" required placeholder="Hi! I'm interested in this item. I'm available Saturday afternoon if it's still available."></textarea>
@@ -892,6 +894,7 @@
     const contactBuyerEmailEl = document.getElementById('contact-buyer-email')
     const contactBuyerPhoneEl = document.getElementById('contact-buyer-phone')
     const contactBuyerMessageEl = document.getElementById('contact-buyer-message')
+    const contactPhoneConsentWrapEl = document.getElementById('contact-phone-consent-wrap')
     const contactPhoneConsentEl = document.getElementById('contact-phone-consent')
     const contactAckMaySellEl = document.getElementById('contact-ack-may-sell')
     const contactAckIntentEl = document.getElementById('contact-ack-intent')
@@ -900,6 +903,8 @@
     let carouselIndex = 0
     let touchStartX = 0
     let contactModalSubmitting = false
+
+    var PHONE_CONSENT_ERROR = 'Please confirm that the seller may contact you by phone or text, or remove your phone number.'
 
     function showError(message) {
       document.body.classList.remove('has-listing')
@@ -1013,11 +1018,31 @@
       contactFormErrorEl.classList.add('hidden')
     }
 
+    function clearPhoneConsentErrorIfShown() {
+      if (contactFormErrorEl.textContent === PHONE_CONSENT_ERROR) {
+        clearContactFormError()
+      }
+    }
+
+    function updatePhoneConsentVisibility() {
+      var hasPhone = contactBuyerPhoneEl.value.trim().length > 0
+
+      if (hasPhone) {
+        contactPhoneConsentWrapEl.classList.remove('hidden')
+        return
+      }
+
+      contactPhoneConsentWrapEl.classList.add('hidden')
+      contactPhoneConsentEl.checked = false
+      clearPhoneConsentErrorIfShown()
+    }
+
     function resetContactModal() {
       contactFormViewEl.classList.remove('hidden')
       contactSuccessViewEl.classList.add('hidden')
       contactModalCloseEl.classList.remove('hidden')
       contactFormEl.reset()
+      updatePhoneConsentVisibility()
       clearContactFormError()
       contactSubmitBtnEl.disabled = false
       contactSubmitBtnEl.textContent = 'Contact Seller'
@@ -1069,7 +1094,7 @@
 
       var phone = contactBuyerPhoneEl.value.trim()
       if (phone && !contactPhoneConsentEl.checked) {
-        return 'Please confirm that the seller may contact you by phone or text, or remove your phone number.'
+        return PHONE_CONSENT_ERROR
       }
 
       var message = contactBuyerMessageEl.value.trim()
@@ -1108,6 +1133,8 @@
       contactSubmitBtnEl.textContent = 'Sending...'
       contactModalCloseEl.disabled = true
 
+      var phone = contactBuyerPhoneEl.value.trim()
+
       fetch('/api/contact-seller', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1115,11 +1142,11 @@
           listing_id: listingId,
           buyer_name: contactBuyerNameEl.value.trim(),
           buyer_email: contactBuyerEmailEl.value.trim(),
-          buyer_phone: contactBuyerPhoneEl.value.trim() || null,
+          buyer_phone: phone || null,
           buyer_message: contactBuyerMessageEl.value.trim(),
           acknowledge_may_sell: contactAckMaySellEl.checked,
           acknowledge_intent_to_purchase: contactAckIntentEl.checked,
-          phone_contact_consent: contactPhoneConsentEl.checked
+          phone_contact_consent: phone ? contactPhoneConsentEl.checked : false
         })
       })
         .then(function (res) {
@@ -1181,6 +1208,7 @@
     contactBtnDesktopEl.addEventListener('click', handleContactClick)
     contactBtnMobileEl.addEventListener('click', handleContactClick)
     contactFormEl.addEventListener('submit', handleContactSubmit)
+    contactBuyerPhoneEl.addEventListener('input', updatePhoneConsentVisibility)
     contactModalCloseEl.addEventListener('click', closeContactModal)
     contactModalBackdropEl.addEventListener('click', closeContactModal)
     contactDoneBtnEl.addEventListener('click', closeContactModal)
