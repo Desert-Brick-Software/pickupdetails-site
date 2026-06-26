@@ -35,7 +35,7 @@ async function fetchListingBySuffix(suffix) {
   const { data, error } = await supabase
     .from('listings')
     .select(SAFE_FIELDS)
-    .ilike('id', `${normalized}-%`)
+    .filter('id::text', 'ilike', `${normalized}-%`)
 
   if (error) {
     return { error }
