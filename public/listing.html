@@ -268,70 +268,71 @@
     }
 
     .bottom-cta {
-      margin-top: 36px;
-      padding: 36px 36px 28px;
+      margin-top: 28px;
+      padding: 22px 28px 18px;
       background: #e8eef4;
       border-radius: 10px;
+      width: 100%;
     }
 
     .bottom-cta-row {
       display: flex;
-      align-items: center;
-      gap: 32px;
+      align-items: flex-start;
+      gap: 24px;
     }
 
     .bottom-cta-icon {
-      height: 78px;
+      height: 96px;
       width: auto;
       flex-shrink: 0;
     }
 
     .bottom-cta-content {
       flex: 1;
-      text-align: center;
+      text-align: left;
       min-width: 0;
+      padding-top: 2px;
     }
 
     .bottom-cta-heading {
-      margin: 0 0 10px;
-      font-size: 21px;
+      margin: 0 0 6px;
+      font-size: 20px;
       font-weight: 600;
       color: #222;
-      line-height: 1.3;
-    }
-
-    .bottom-cta-body {
-      margin: 0 0 16px;
-      font-size: 15px;
-      line-height: 1.6;
-      color: #444;
-      max-width: 520px;
-      margin-left: auto;
-      margin-right: auto;
+      line-height: 1.25;
     }
 
     .bottom-cta-link {
       display: inline-block;
-      font-size: 15px;
+      margin: 0 0 8px;
+      font-size: 16px;
       font-weight: 600;
       color: #2d4f73;
       text-decoration: none;
+      line-height: 1.4;
     }
 
     .bottom-cta-link:hover {
       text-decoration: underline;
     }
 
+    .bottom-cta-body {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #555;
+    }
+
     .bottom-cta-divider {
       border-top: 1px solid rgba(45, 79, 115, 0.14);
-      margin: 28px 0 20px;
+      margin: 16px 0 12px;
     }
 
     .trust-strip {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px 28px;
+      gap: 8px 24px;
       font-size: 13px;
       color: #5a6573;
     }
@@ -474,26 +475,40 @@
       }
 
       .bottom-cta {
-        padding: 28px 22px 22px;
+        padding: 18px 18px 14px;
       }
 
       .bottom-cta-row {
-        flex-direction: column;
-        gap: 20px;
+        gap: 16px;
       }
 
       .bottom-cta-icon {
-        height: 60px;
+        height: 68px;
+      }
+
+      .bottom-cta-heading {
+        font-size: 18px;
+        margin-bottom: 5px;
+      }
+
+      .bottom-cta-link {
+        font-size: 15px;
+        margin-bottom: 6px;
+      }
+
+      .bottom-cta-body {
+        font-size: 13px;
+        line-height: 1.45;
       }
 
       .bottom-cta-divider {
-        margin: 24px 0 18px;
+        margin: 14px 0 10px;
       }
 
       .trust-strip {
         flex-direction: column;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
       }
 
       .page {
@@ -563,8 +578,8 @@
         <img src="checklist.png" alt="" class="bottom-cta-icon" aria-hidden="true" />
         <div class="bottom-cta-content">
           <h2 class="bottom-cta-heading">Selling something online?</h2>
-          <p class="bottom-cta-body">Share your pickup details once instead of answering the same questions over and over.</p>
           <a href="create.html" class="bottom-cta-link">Create your free PickupDetails listing →</a>
+          <p class="bottom-cta-body">Share your pickup details once instead of answering the same questions over and over.</p>
         </div>
       </div>
       <div class="bottom-cta-divider"></div>
