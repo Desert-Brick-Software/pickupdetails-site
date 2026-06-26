@@ -113,6 +113,49 @@
       font-weight: bold;
     }
 
+    .image-previews {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .image-preview-item {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+
+    .image-preview-item img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      display: block;
+    }
+
+    .image-preview-remove {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 22px;
+      height: 22px;
+      padding: 0;
+      margin: 0;
+      font-size: 14px;
+      line-height: 20px;
+      border-radius: 50%;
+      background: #721c24;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .image-preview-remove:hover {
+      background: #5a151c;
+    }
+
     /* AGREEMENT CHECKBOX */
     .agreement {
       margin-top: 20px;
@@ -251,13 +294,23 @@
 
       <!-- DESCRIPTION -->
       <label for="description">Describe your item</label>
-      <textarea id="description" name="description" placeholder="Condition, price (optional), anything buyers should know..." required></textarea>
+      <textarea id="description" name="description" placeholder="Condition, details, anything buyers should know..." required></textarea>
 
       <div class="helper privacy-notice">Privacy Notice: Do not include sensitive personal information such as Social Security numbers, financial account information, passwords, government identification numbers, medical information, or other confidential information in listings, messages, or photos.</div>
+
+      <!-- PRICE -->
+      <label for="price">Price (optional)</label>
+      <input type="text" id="price" name="price" placeholder="e.g. 50 or Free" />
+
+      <!-- AVAILABILITY -->
+      <label for="availability">Availability (optional)</label>
+      <div class="helper">When are you generally available for pickup?</div>
+      <input type="text" id="availability" name="availability" placeholder="e.g. Weekends, evenings after 6pm" />
 
       <!-- FILE UPLOAD -->
       <div class="file-label">Upload photos (up to 3)</div>
       <input type="file" id="images" name="images" accept="image/*" multiple />
+      <div id="image-previews" class="image-previews"></div>
 
       <!-- POLICY CHECKBOX -->
       <div class="agreement">
@@ -281,12 +334,23 @@
   </div>
 
   <script>
+    const MAX_IMAGES = 3
+    const MAX_EDGE = 1600
+    const JPEG_QUALITY = 0.82
+
     const createFormEl = document.getElementById('create-form')
     const titleEl = document.getElementById('title')
     const emailEl = document.getElementById('email')
     const descriptionEl = document.getElementById('description')
+    const priceEl = document.getElementById('price')
+    const availabilityEl = document.getElementById('availability')
+    const imagesInputEl = document.getElementById('images')
+    const imagePreviewsEl = document.getElementById('image-previews')
     const submitBtnEl = document.getElementById('submit-btn')
     const statusMessageEl = document.getElementById('status-message')
+
+    let selectedImages = []
+    let nextImageId = 1
 
     function showStatus(message, type) {
       statusMessageEl.innerHTML = message
@@ -299,32 +363,158 @@
       statusMessageEl.innerHTML = ''
     }
 
+    function renderImagePreviews() {
+      imagePreviewsEl.innerHTML = ''
+
+      selectedImages.forEach(function (item) {
+        const wrapper = document.createElement('div')
+        wrapper.className = 'image-preview-item'
+
+        const img = document.createElement('img')
+        img.src = item.previewUrl
+        img.alt = 'Selected photo preview'
+
+        const removeBtn = document.createElement('button')
+        removeBtn.type = 'button'
+        removeBtn.className = 'image-preview-remove'
+        removeBtn.setAttribute('aria-label', 'Remove photo')
+        removeBtn.textContent = '×'
+        removeBtn.addEventListener('click', function () {
+          removeSelectedImage(item.id)
+        })
+
+        wrapper.appendChild(img)
+        wrapper.appendChild(removeBtn)
+        imagePreviewsEl.appendChild(wrapper)
+      })
+    }
+
+    function removeSelectedImage(id) {
+      selectedImages = selectedImages.filter(function (item) {
+        if (item.id === id) {
+          URL.revokeObjectURL(item.previewUrl)
+          return false
+        }
+        return true
+      })
+      renderImagePreviews()
+    }
+
+    function compressImage(file, index) {
+      return createImageBitmap(file).then(function (bitmap) {
+        var width = bitmap.width
+        var height = bitmap.height
+
+        if (width > MAX_EDGE || height > MAX_EDGE) {
+          if (width >= height) {
+            height = Math.round(height * (MAX_EDGE / width))
+            width = MAX_EDGE
+          } else {
+            width = Math.round(width * (MAX_EDGE / height))
+            height = MAX_EDGE
+          }
+        }
+
+        var canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+        var ctx = canvas.getContext('2d')
+        ctx.drawImage(bitmap, 0, 0, width, height)
+        bitmap.close()
+
+        return new Promise(function (resolve, reject) {
+          canvas.toBlob(function (blob) {
+            if (!blob) {
+              reject(new Error('Compression failed'))
+              return
+            }
+            resolve(new File([blob], 'listing-image-' + index + '.jpg', { type: 'image/jpeg' }))
+          }, 'image/jpeg', JPEG_QUALITY)
+        })
+      })
+    }
+
+    imagesInputEl.addEventListener('change', function () {
+      clearStatus()
+      var files = Array.from(imagesInputEl.files || [])
+      imagesInputEl.value = ''
+
+      if (files.length === 0) {
+        return
+      }
+
+      var invalidFound = false
+      var limitReached = false
+
+      files.forEach(function (file) {
+        if (!file.type || !file.type.startsWith('image/')) {
+          invalidFound = true
+          return
+        }
+
+        if (selectedImages.length >= MAX_IMAGES) {
+          limitReached = true
+          return
+        }
+
+        selectedImages.push({
+          id: nextImageId++,
+          file: file,
+          previewUrl: URL.createObjectURL(file)
+        })
+      })
+
+      renderImagePreviews()
+
+      if (invalidFound) {
+        showStatus('Please select image files only.', 'error')
+      } else if (limitReached) {
+        showStatus('You can upload up to 3 photos. Remove one to add another.', 'error')
+      }
+    })
+
     createFormEl.addEventListener('submit', function (e) {
       e.preventDefault()
       clearStatus()
 
-      const title = titleEl.value.trim()
-      const description = descriptionEl.value.trim()
-      const contact_email = emailEl.value.trim()
+      var title = titleEl.value.trim()
+      var description = descriptionEl.value.trim()
+      var contact_email = emailEl.value.trim()
+      var price = priceEl.value.trim()
+      var availability = availabilityEl.value.trim()
 
       if (!description || !contact_email) {
         showStatus('Please fill in all required fields.', 'error')
         return
       }
 
-      const payload = {
-        title: title || description.slice(0, 100),
-        description: description,
-        contact_email: contact_email
-      }
-
       submitBtnEl.disabled = true
 
-      fetch('/api/create-listing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
+      Promise.all(selectedImages.map(function (item, index) {
+        return compressImage(item.file, index + 1)
+      }))
+        .then(function (compressedFiles) {
+          var formData = new FormData()
+          formData.append('title', title || description.slice(0, 100))
+          formData.append('description', description)
+          formData.append('contact_email', contact_email)
+
+          if (price) {
+            formData.append('price', price)
+          }
+          if (availability) {
+            formData.append('availability', availability)
+          }
+
+          compressedFiles.forEach(function (file) {
+            formData.append('images', file)
+          })
+
+          return fetch('/api/create-listing', {
+            method: 'POST',
+            body: formData
+          })
+        })
         .then(function (res) {
           return res.json().then(function (data) {
             return { ok: res.ok, data: data }
@@ -346,7 +536,7 @@
           showStatus(message, 'success')
         })
         .catch(function () {
-          showStatus('Failed to create listing. Please try again.', 'error')
+          showStatus('Could not process one of your photos. Try a different image or submit without photos.', 'error')
           submitBtnEl.disabled = false
         })
     })

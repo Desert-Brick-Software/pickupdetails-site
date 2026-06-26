@@ -1,6 +1,6 @@
 import { supabase } from './lib/supabase'
 
-const ALLOWED_FIELDS = ['title', 'description', 'price']
+const ALLOWED_FIELDS = ['title', 'description', 'price', 'availability']
 
 export default async function handler(req, res) {
   if (req.method !== 'PATCH') {

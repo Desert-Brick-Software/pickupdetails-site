@@ -34,6 +34,18 @@
       margin-bottom: 20px;
     }
 
+    .availability {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .availability-label {
+      font-weight: bold;
+      color: #333;
+    }
+
     .description {
       white-space: pre-wrap;
       line-height: 1.5;
@@ -85,6 +97,7 @@
     <div id="listing-content" class="hidden">
       <h1 id="title"></h1>
       <div id="price" class="price"></div>
+      <div id="availability" class="availability hidden"></div>
       <div id="images" class="images"></div>
       <div id="description" class="description"></div>
     </div>
@@ -99,6 +112,7 @@
     const listingContentEl = document.getElementById('listing-content')
     const titleEl = document.getElementById('title')
     const priceEl = document.getElementById('price')
+    const availabilityEl = document.getElementById('availability')
     const imagesEl = document.getElementById('images')
     const descriptionEl = document.getElementById('description')
 
@@ -127,12 +141,28 @@
       return String(price)
     }
 
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+    }
+
     function renderImages(imageUrls) {
       imagesEl.innerHTML = ''
-      if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+      var urls = imageUrls
+      if (typeof urls === 'string') {
+        try {
+          urls = JSON.parse(urls)
+        } catch {
+          urls = []
+        }
+      }
+      if (!Array.isArray(urls) || urls.length === 0) {
         return
       }
-      imageUrls.forEach(function (url) {
+      urls.forEach(function (url) {
         if (!url) {
           return
         }
@@ -167,6 +197,15 @@
           const listing = result.data.listing
           titleEl.textContent = listing.title || 'Untitled Listing'
           priceEl.textContent = formatPrice(listing.price)
+
+          if (listing.availability) {
+            availabilityEl.innerHTML = '<span class="availability-label">Availability:</span> ' + escapeHtml(listing.availability)
+            availabilityEl.classList.remove('hidden')
+          } else {
+            availabilityEl.classList.add('hidden')
+            availabilityEl.innerHTML = ''
+          }
+
           descriptionEl.textContent = listing.description || ''
           renderImages(listing.image_urls)
 

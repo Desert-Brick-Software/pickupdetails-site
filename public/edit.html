@@ -157,6 +157,9 @@
         <label for="price">Price</label>
         <input type="text" id="price" name="price" placeholder="e.g. 50 or Free" />
 
+        <label for="availability">Availability</label>
+        <input type="text" id="availability" name="availability" placeholder="e.g. Weekends, evenings after 6pm" />
+
         <div class="actions">
           <button type="submit" id="save-btn" class="btn-primary">Save Changes</button>
           <button type="button" id="sold-btn" class="btn-secondary">Mark as Sold</button>
@@ -179,6 +182,7 @@
     const titleEl = document.getElementById('title')
     const descriptionEl = document.getElementById('description')
     const priceEl = document.getElementById('price')
+    const availabilityEl = document.getElementById('availability')
     const saveBtnEl = document.getElementById('save-btn')
     const soldBtnEl = document.getElementById('sold-btn')
     const statusMessageEl = document.getElementById('status-message')
@@ -217,6 +221,7 @@
       titleEl.disabled = true
       descriptionEl.disabled = true
       priceEl.disabled = true
+      availabilityEl.disabled = true
       saveBtnEl.disabled = true
       soldBtnEl.disabled = true
     }
@@ -225,6 +230,7 @@
       titleEl.value = listing.title || ''
       descriptionEl.value = listing.description || ''
       priceEl.value = listing.price != null ? String(listing.price) : ''
+      availabilityEl.value = listing.availability || ''
 
       if (listing.status === 'sold') {
         setSoldState()
@@ -272,7 +278,8 @@
           edit_token: token,
           title: titleEl.value,
           description: descriptionEl.value,
-          price: priceEl.value
+          price: priceEl.value,
+          availability: availabilityEl.value
         })
       })
         .then(function (res) {
