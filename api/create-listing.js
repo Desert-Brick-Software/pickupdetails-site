@@ -116,6 +116,7 @@ export default async function handler(req, res) {
     const contact_email = firstField(fields, 'contact_email')
     const price = optionalField(fields, 'price')
     const availability = optionalField(fields, 'availability')
+    const location = optionalField(fields, 'location')
 
     if (!title || !description || !contact_email) {
       return res.status(400).json({ error: 'Missing required fields' })
@@ -145,6 +146,7 @@ export default async function handler(req, res) {
           description,
           price,
           availability,
+          location,
           contact_email,
           edit_token,
           status: 'active'

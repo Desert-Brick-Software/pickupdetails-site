@@ -344,6 +344,7 @@
     const descriptionEl = document.getElementById('description')
     const priceEl = document.getElementById('price')
     const availabilityEl = document.getElementById('availability')
+    const locationEl = document.getElementById('location')
     const imagesInputEl = document.getElementById('images')
     const imagePreviewsEl = document.getElementById('image-previews')
     const submitBtnEl = document.getElementById('submit-btn')
@@ -482,6 +483,7 @@
       var contact_email = emailEl.value.trim()
       var price = priceEl.value.trim()
       var availability = availabilityEl.value.trim()
+      var location = locationEl.value.trim()
 
       if (!description || !contact_email) {
         showStatus('Please fill in all required fields.', 'error')
@@ -504,6 +506,9 @@
           }
           if (availability) {
             formData.append('availability', availability)
+          }
+          if (location) {
+            formData.append('location', location)
           }
 
           compressedFiles.forEach(function (file) {

@@ -1,6 +1,6 @@
 import { supabase } from './lib/supabase'
 
-const SAFE_FIELDS = 'id, title, description, price, availability, image_urls, status, created_at'
+const SAFE_FIELDS = 'id, title, description, price, availability, location, image_urls, status, created_at'
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {

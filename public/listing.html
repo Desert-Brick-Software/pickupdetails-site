@@ -5,64 +5,260 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Listing | Pickup Details</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #f7f7f7;
       color: #333;
+      line-height: 1.5;
     }
 
-    .container {
+    body.has-listing {
+      padding-bottom: 76px;
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      background: white;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .brand-header img {
+      height: 36px;
+      width: auto;
+    }
+
+    .page {
       max-width: 640px;
-      margin: 40px auto;
+      margin: 0 auto;
+      padding: 20px 16px 32px;
+    }
+
+    .listing-card {
       background: white;
       padding: 24px;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
 
-    h1 {
-      margin-top: 0;
-      font-size: 24px;
+    .title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
       margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.3;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-badge.available {
+      background: #e6f4ea;
+      color: #1e6b3a;
+    }
+
+    .status-badge.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .status-badge.sold {
+      background: #f0f0f0;
+      color: #6b4a4a;
     }
 
     .price {
       font-size: 20px;
       font-weight: bold;
       color: #2d4f73;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
 
-    .availability {
+    .section {
+      margin-bottom: 16px;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #2d4f73;
+      margin-bottom: 4px;
+    }
+
+    .section-value {
       font-size: 14px;
+      color: #444;
       line-height: 1.5;
-      color: #555;
-      margin-bottom: 20px;
-    }
-
-    .availability-label {
-      font-weight: bold;
-      color: #333;
     }
 
     .description {
       white-space: pre-wrap;
-      line-height: 1.5;
-      margin-bottom: 24px;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #333;
     }
 
-    .images {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 24px;
+    .carousel {
+      margin-bottom: 20px;
     }
 
-    .images img {
-      width: 100%;
+    .carousel-viewport {
+      position: relative;
+      background: #f3f3f3;
       border-radius: 6px;
       border: 1px solid #e5e5e5;
+      overflow: hidden;
+      touch-action: pan-y pinch-zoom;
+    }
+
+    .carousel-viewport img {
+      display: block;
+      width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+      margin: 0 auto;
+    }
+
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.92);
+      color: #2d4f73;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .carousel-nav:hover {
+      background: white;
+    }
+
+    .carousel-nav.prev {
+      left: 8px;
+    }
+
+    .carousel-nav.next {
+      right: 8px;
+    }
+
+    .carousel-counter {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .contact-btn {
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      background-color: #2d4f73;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .contact-btn:hover {
+      background-color: #1f3a55;
+    }
+
+    .contact-btn-desktop {
+      margin-top: 4px;
+    }
+
+    .contact-btn-mobile-bar {
+      display: none;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 12px 16px;
+      background: white;
+      border-top: 1px solid #e5e5e5;
+      box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+      z-index: 100;
+    }
+
+    .bottom-cta {
+      margin-top: 28px;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      font-size: 15px;
+      line-height: 1.55;
+      color: #444;
+    }
+
+    .bottom-cta a {
+      color: #2d4f73;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .bottom-cta a:hover {
+      text-decoration: underline;
+    }
+
+    .site-footer {
+      margin-top: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: #777;
+      line-height: 1.6;
+    }
+
+    .site-footer a {
+      color: #2d4f73;
+      text-decoration: none;
+    }
+
+    .site-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .footer-sep {
+      margin: 0 8px;
+      color: #ccc;
     }
 
     .message {
@@ -78,29 +274,109 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
+    }
+
+    @media (min-width: 601px) {
+      body.has-listing {
+        padding-bottom: 0;
+      }
+
+      .page {
+        padding: 32px 20px 48px;
+      }
+
+      .listing-card {
+        padding: 28px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      .carousel-viewport img {
+        max-height: 360px;
+      }
+
+      .contact-btn-mobile-bar {
+        display: none !important;
+      }
     }
 
     @media (max-width: 600px) {
-      .container {
-        margin: 20px;
-        padding: 20px;
+      .contact-btn-desktop-wrap {
+        display: none;
+      }
+
+      .contact-btn-mobile-bar {
+        display: block;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="loading">Loading...</div>
-    <div id="error-state" class="message error hidden"></div>
+  <header class="brand-header">
+    <img src="logo.png" alt="PickupDetails" />
+  </header>
 
-    <div id="listing-content" class="hidden">
-      <h1 id="title"></h1>
-      <div id="price" class="price"></div>
-      <div id="availability" class="availability hidden"></div>
-      <div id="images" class="images"></div>
-      <div id="description" class="description"></div>
+  <div class="page">
+    <div class="listing-card">
+      <div id="loading">Loading...</div>
+      <div id="error-state" class="message error hidden"></div>
+
+      <div id="listing-content" class="hidden">
+        <div class="title-row">
+          <h1 id="title"></h1>
+          <span id="status-badge" class="status-badge available">Available</span>
+        </div>
+        <div id="price" class="price"></div>
+
+        <div id="availability-section" class="section hidden">
+          <div class="section-label">📅 Availability</div>
+          <div id="availability" class="section-value"></div>
+        </div>
+
+        <div id="location-section" class="section hidden">
+          <div class="section-label">📍 Pickup Area</div>
+          <div id="location" class="section-value"></div>
+        </div>
+
+        <div class="section">
+          <div class="section-label">Description</div>
+          <div id="description" class="description"></div>
+        </div>
+
+        <div id="carousel" class="carousel hidden">
+          <div class="carousel-viewport" id="carousel-viewport">
+            <button type="button" class="carousel-nav prev hidden" id="carousel-prev" aria-label="Previous image">‹</button>
+            <img id="carousel-image" src="" alt="Listing photo" />
+            <button type="button" class="carousel-nav next hidden" id="carousel-next" aria-label="Next image">›</button>
+          </div>
+          <div id="carousel-counter" class="carousel-counter"></div>
+        </div>
+
+        <div class="contact-btn-desktop-wrap">
+          <button type="button" class="contact-btn contact-btn-desktop" id="contact-btn-desktop">
+            Contact Seller About This Item
+          </button>
+        </div>
+      </div>
     </div>
+
+    <div class="bottom-cta">
+      Selling something online?<br />
+      Share your pickup details once instead of answering the same questions over and over.<br />
+      <a href="create.html">Create your free PickupDetails listing →</a>
+    </div>
+
+    <footer class="site-footer">
+      PickupDetails is a product of Desert Brick Software.<br />
+      <a href="/legal/privacy-policy/">Privacy Policy</a><span class="footer-sep">|</span><a href="/legal/terms/">Terms of Use</a>
+    </footer>
+  </div>
+
+  <div class="contact-btn-mobile-bar hidden" id="contact-mobile-bar">
+    <button type="button" class="contact-btn" id="contact-btn-mobile">Contact Seller</button>
   </div>
 
   <script>
@@ -112,13 +388,31 @@
     const listingContentEl = document.getElementById('listing-content')
     const titleEl = document.getElementById('title')
     const priceEl = document.getElementById('price')
+    const statusBadgeEl = document.getElementById('status-badge')
+    const availabilitySectionEl = document.getElementById('availability-section')
     const availabilityEl = document.getElementById('availability')
-    const imagesEl = document.getElementById('images')
+    const locationSectionEl = document.getElementById('location-section')
+    const locationEl = document.getElementById('location')
     const descriptionEl = document.getElementById('description')
+    const carouselEl = document.getElementById('carousel')
+    const carouselImageEl = document.getElementById('carousel-image')
+    const carouselCounterEl = document.getElementById('carousel-counter')
+    const carouselPrevEl = document.getElementById('carousel-prev')
+    const carouselNextEl = document.getElementById('carousel-next')
+    const carouselViewportEl = document.getElementById('carousel-viewport')
+    const contactBtnDesktopEl = document.getElementById('contact-btn-desktop')
+    const contactBtnMobileEl = document.getElementById('contact-btn-mobile')
+    const contactMobileBarEl = document.getElementById('contact-mobile-bar')
+
+    let carouselUrls = []
+    let carouselIndex = 0
+    let touchStartX = 0
 
     function showError(message) {
+      document.body.classList.remove('has-listing')
       loadingEl.classList.add('hidden')
       listingContentEl.classList.add('hidden')
+      contactMobileBarEl.classList.add('hidden')
       errorStateEl.textContent = message
       errorStateEl.classList.remove('hidden')
     }
@@ -149,8 +443,24 @@
         .replace(/"/g, '&quot;')
     }
 
-    function renderImages(imageUrls) {
-      imagesEl.innerHTML = ''
+    function statusDisplay(status) {
+      var normalized = String(status || 'active').toLowerCase()
+      if (normalized === 'pending') {
+        return { label: 'Pending', className: 'pending' }
+      }
+      if (normalized === 'sold') {
+        return { label: 'Sold', className: 'sold' }
+      }
+      return { label: 'Available', className: 'available' }
+    }
+
+    function renderStatusBadge(status) {
+      var display = statusDisplay(status)
+      statusBadgeEl.textContent = display.label
+      statusBadgeEl.className = 'status-badge ' + display.className
+    }
+
+    function parseImageUrls(imageUrls) {
       var urls = imageUrls
       if (typeof urls === 'string') {
         try {
@@ -159,19 +469,79 @@
           urls = []
         }
       }
-      if (!Array.isArray(urls) || urls.length === 0) {
-        return
+      if (!Array.isArray(urls)) {
+        return []
       }
-      urls.forEach(function (url) {
-        if (!url) {
-          return
-        }
-        const img = document.createElement('img')
-        img.src = url
-        img.alt = 'Listing photo'
-        imagesEl.appendChild(img)
+      return urls.filter(function (url) {
+        return Boolean(url)
       })
     }
+
+    function updateCarousel() {
+      if (carouselUrls.length === 0) {
+        carouselEl.classList.add('hidden')
+        return
+      }
+
+      carouselEl.classList.remove('hidden')
+      carouselImageEl.src = carouselUrls[carouselIndex]
+      carouselCounterEl.textContent = 'Image ' + (carouselIndex + 1) + ' of ' + carouselUrls.length
+
+      var showNav = carouselUrls.length > 1
+      carouselPrevEl.classList.toggle('hidden', !showNav)
+      carouselNextEl.classList.toggle('hidden', !showNav)
+    }
+
+    function renderCarousel(imageUrls) {
+      carouselUrls = parseImageUrls(imageUrls)
+      carouselIndex = 0
+      updateCarousel()
+    }
+
+    function goToImage(index) {
+      if (carouselUrls.length === 0) {
+        return
+      }
+      carouselIndex = (index + carouselUrls.length) % carouselUrls.length
+      updateCarousel()
+    }
+
+    function handleContactClick(e) {
+      e.preventDefault()
+      alert('Contact form coming soon.')
+    }
+
+    carouselPrevEl.addEventListener('click', function () {
+      goToImage(carouselIndex - 1)
+    })
+
+    carouselNextEl.addEventListener('click', function () {
+      goToImage(carouselIndex + 1)
+    })
+
+    carouselViewportEl.addEventListener('touchstart', function (e) {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX
+      }
+    }, { passive: true })
+
+    carouselViewportEl.addEventListener('touchend', function (e) {
+      if (carouselUrls.length <= 1 || !e.changedTouches.length) {
+        return
+      }
+      var deltaX = e.changedTouches[0].clientX - touchStartX
+      if (Math.abs(deltaX) < 40) {
+        return
+      }
+      if (deltaX < 0) {
+        goToImage(carouselIndex + 1)
+      } else {
+        goToImage(carouselIndex - 1)
+      }
+    }, { passive: true })
+
+    contactBtnDesktopEl.addEventListener('click', handleContactClick)
+    contactBtnMobileEl.addEventListener('click', handleContactClick)
 
     if (!listingId) {
       showError('No listing ID provided.')
@@ -197,18 +567,29 @@
           const listing = result.data.listing
           titleEl.textContent = listing.title || 'Untitled Listing'
           priceEl.textContent = formatPrice(listing.price)
+          renderStatusBadge(listing.status)
 
           if (listing.availability) {
-            availabilityEl.innerHTML = '<span class="availability-label">Availability:</span> ' + escapeHtml(listing.availability)
-            availabilityEl.classList.remove('hidden')
+            availabilityEl.textContent = listing.availability
+            availabilitySectionEl.classList.remove('hidden')
           } else {
-            availabilityEl.classList.add('hidden')
-            availabilityEl.innerHTML = ''
+            availabilitySectionEl.classList.add('hidden')
+            availabilityEl.textContent = ''
+          }
+
+          if (listing.location) {
+            locationEl.textContent = listing.location
+            locationSectionEl.classList.remove('hidden')
+          } else {
+            locationSectionEl.classList.add('hidden')
+            locationEl.textContent = ''
           }
 
           descriptionEl.textContent = listing.description || ''
-          renderImages(listing.image_urls)
+          renderCarousel(listing.image_urls)
 
+          document.body.classList.add('has-listing')
+          contactMobileBarEl.classList.remove('hidden')
           listingContentEl.classList.remove('hidden')
         })
         .catch(function () {
