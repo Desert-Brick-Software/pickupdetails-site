@@ -390,6 +390,191 @@
       display: none !important;
     }
 
+    .contact-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .contact-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .contact-modal-dialog {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 24px 22px 22px;
+    }
+
+    .contact-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      color: #666;
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .contact-modal-close:hover:not(:disabled) {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .contact-modal-close:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .contact-modal-title {
+      margin: 0 32px 18px 0;
+      font-size: 20px;
+      line-height: 1.3;
+      color: #222;
+    }
+
+    .contact-form label {
+      display: block;
+      font-weight: bold;
+      font-size: 14px;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+
+    .contact-form label:first-of-type {
+      margin-top: 0;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .contact-form textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .contact-reminder {
+      margin-top: 14px;
+      padding: 10px 12px;
+      background: #f0f4f8;
+      border: 1px solid #d8e2ec;
+      border-radius: 4px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .contact-acknowledgment {
+      margin-top: 16px;
+    }
+
+    .contact-ack-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: normal;
+      line-height: 1.45;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .contact-ack-label input[type="checkbox"] {
+      width: auto;
+      flex-shrink: 0;
+      margin: 2px 0 0;
+      padding: 0;
+    }
+
+    .contact-form-error {
+      margin-top: 14px;
+    }
+
+    .contact-submit-btn {
+      display: block;
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      background-color: #2d4f73;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .contact-submit-btn:hover:not(:disabled) {
+      background-color: #1f3a55;
+    }
+
+    .contact-submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .contact-success-view {
+      text-align: center;
+      padding: 8px 4px 4px;
+    }
+
+    .contact-success-icon {
+      font-size: 28px;
+      color: #1e6b3a;
+      margin-bottom: 12px;
+    }
+
+    .contact-success-heading {
+      margin: 0 0 12px;
+      font-size: 20px;
+      color: #222;
+    }
+
+    .contact-success-body {
+      margin: 0 0 10px;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #444;
+    }
+
+    .contact-success-note {
+      margin: 0 0 20px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #666;
+    }
+
     @media (min-width: 768px) {
       .listing-grid {
         flex-direction: row;
@@ -603,6 +788,57 @@
     <button type="button" class="contact-btn" id="contact-btn-mobile">Contact Seller</button>
   </div>
 
+  <div id="contact-modal" class="contact-modal hidden" aria-hidden="true">
+    <div class="contact-modal-backdrop" id="contact-modal-backdrop"></div>
+    <div class="contact-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="contact-modal-title">
+      <button type="button" class="contact-modal-close" id="contact-modal-close" aria-label="Close">&times;</button>
+
+      <div id="contact-form-view">
+        <h2 id="contact-modal-title" class="contact-modal-title">Contact Seller</h2>
+        <form id="contact-form" class="contact-form" novalidate>
+          <label for="contact-buyer-name">Your name</label>
+          <input type="text" id="contact-buyer-name" name="buyer_name" autocomplete="name" required />
+
+          <label for="contact-buyer-email">Your email</label>
+          <input type="email" id="contact-buyer-email" name="buyer_email" autocomplete="email" required />
+
+          <label for="contact-buyer-phone">Your phone <span style="font-weight: normal; color: #777;">(optional)</span></label>
+          <input type="tel" id="contact-buyer-phone" name="buyer_phone" autocomplete="tel" />
+
+          <label for="contact-buyer-message">Message</label>
+          <textarea id="contact-buyer-message" name="buyer_message" required placeholder="Hi! I'm interested in this item. I'm available Saturday afternoon if it's still available."></textarea>
+
+          <div class="contact-reminder">
+            Reminder: The seller has already shared their availability, location, and listing details. If your question is answered above, consider waiting until you're ready to purchase before contacting them.
+          </div>
+
+          <div class="contact-acknowledgment">
+            <label class="contact-ack-label">
+              <input type="checkbox" id="contact-ack-may-sell" name="acknowledge_may_sell" />
+              <span>I understand this item may sell before the seller responds.</span>
+            </label>
+            <label class="contact-ack-label">
+              <input type="checkbox" id="contact-ack-intent" name="acknowledge_intent_to_purchase" />
+              <span>I intend to purchase this item if it matches the description and we can agree on pickup.</span>
+            </label>
+          </div>
+
+          <div id="contact-form-error" class="message error contact-form-error hidden"></div>
+
+          <button type="submit" class="contact-submit-btn" id="contact-submit-btn">Contact Seller</button>
+        </form>
+      </div>
+
+      <div id="contact-success-view" class="contact-success-view hidden">
+        <div class="contact-success-icon">✓</div>
+        <h2 class="contact-success-heading">Your message has been sent</h2>
+        <p class="contact-success-body">The seller has received your inquiry and can reply directly to the email address you provided.</p>
+        <p class="contact-success-note">Thank you for taking a moment to review the listing before contacting the seller.</p>
+        <button type="button" class="contact-submit-btn" id="contact-done-btn">Done</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const params = new URLSearchParams(window.location.search)
     const listingId = params.get('id')
@@ -627,10 +863,26 @@
     const contactBtnDesktopEl = document.getElementById('contact-btn-desktop')
     const contactBtnMobileEl = document.getElementById('contact-btn-mobile')
     const contactMobileBarEl = document.getElementById('contact-mobile-bar')
+    const contactModalEl = document.getElementById('contact-modal')
+    const contactModalBackdropEl = document.getElementById('contact-modal-backdrop')
+    const contactModalCloseEl = document.getElementById('contact-modal-close')
+    const contactFormViewEl = document.getElementById('contact-form-view')
+    const contactSuccessViewEl = document.getElementById('contact-success-view')
+    const contactFormEl = document.getElementById('contact-form')
+    const contactFormErrorEl = document.getElementById('contact-form-error')
+    const contactSubmitBtnEl = document.getElementById('contact-submit-btn')
+    const contactDoneBtnEl = document.getElementById('contact-done-btn')
+    const contactBuyerNameEl = document.getElementById('contact-buyer-name')
+    const contactBuyerEmailEl = document.getElementById('contact-buyer-email')
+    const contactBuyerPhoneEl = document.getElementById('contact-buyer-phone')
+    const contactBuyerMessageEl = document.getElementById('contact-buyer-message')
+    const contactAckMaySellEl = document.getElementById('contact-ack-may-sell')
+    const contactAckIntentEl = document.getElementById('contact-ack-intent')
 
     let carouselUrls = []
     let carouselIndex = 0
     let touchStartX = 0
+    let contactModalSubmitting = false
 
     function showError(message) {
       document.body.classList.remove('has-listing')
@@ -730,9 +982,148 @@
       updateCarousel()
     }
 
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    }
+
+    function showContactFormError(message) {
+      contactFormErrorEl.textContent = message
+      contactFormErrorEl.classList.remove('hidden')
+    }
+
+    function clearContactFormError() {
+      contactFormErrorEl.textContent = ''
+      contactFormErrorEl.classList.add('hidden')
+    }
+
+    function resetContactModal() {
+      contactFormViewEl.classList.remove('hidden')
+      contactSuccessViewEl.classList.add('hidden')
+      contactModalCloseEl.classList.remove('hidden')
+      contactFormEl.reset()
+      clearContactFormError()
+      contactSubmitBtnEl.disabled = false
+      contactSubmitBtnEl.textContent = 'Contact Seller'
+      contactModalSubmitting = false
+    }
+
+    function openContactModal() {
+      resetContactModal()
+      contactModalEl.classList.remove('hidden')
+      contactModalEl.setAttribute('aria-hidden', 'false')
+      document.body.style.overflow = 'hidden'
+      contactBuyerNameEl.focus()
+    }
+
+    function closeContactModal() {
+      if (contactModalSubmitting) {
+        return
+      }
+      contactModalEl.classList.add('hidden')
+      contactModalEl.setAttribute('aria-hidden', 'true')
+      document.body.style.overflow = ''
+    }
+
+    function showContactSuccess() {
+      contactFormViewEl.classList.add('hidden')
+      contactSuccessViewEl.classList.remove('hidden')
+      contactModalCloseEl.classList.add('hidden')
+      clearContactFormError()
+      contactDoneBtnEl.focus()
+    }
+
+    function validateContactForm() {
+      if (!listingId) {
+        return 'This listing is unavailable. Please refresh the page and try again.'
+      }
+
+      var name = contactBuyerNameEl.value.trim()
+      if (!name) {
+        return 'Please enter your name.'
+      }
+
+      var email = contactBuyerEmailEl.value.trim()
+      if (!email) {
+        return 'Please enter your email address.'
+      }
+      if (!isValidEmail(email)) {
+        return 'Please enter a valid email address.'
+      }
+
+      var message = contactBuyerMessageEl.value.trim()
+      if (!message) {
+        return 'Please enter a message for the seller.'
+      }
+
+      if (!contactAckMaySellEl.checked) {
+        return 'Please confirm that you understand this item may sell before the seller responds.'
+      }
+
+      if (!contactAckIntentEl.checked) {
+        return 'Please confirm that you intend to purchase this item if it matches the description.'
+      }
+
+      return null
+    }
+
     function handleContactClick(e) {
       e.preventDefault()
-      alert('Contact form coming soon.')
+      openContactModal()
+    }
+
+    function handleContactSubmit(e) {
+      e.preventDefault()
+      clearContactFormError()
+
+      var validationError = validateContactForm()
+      if (validationError) {
+        showContactFormError(validationError)
+        return
+      }
+
+      contactModalSubmitting = true
+      contactSubmitBtnEl.disabled = true
+      contactSubmitBtnEl.textContent = 'Sending...'
+      contactModalCloseEl.disabled = true
+
+      fetch('/api/contact-seller', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          listing_id: listingId,
+          buyer_name: contactBuyerNameEl.value.trim(),
+          buyer_email: contactBuyerEmailEl.value.trim(),
+          buyer_phone: contactBuyerPhoneEl.value.trim() || null,
+          buyer_message: contactBuyerMessageEl.value.trim(),
+          acknowledge_may_sell: contactAckMaySellEl.checked,
+          acknowledge_intent_to_purchase: contactAckIntentEl.checked
+        })
+      })
+        .then(function (res) {
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data }
+          })
+        })
+        .then(function (result) {
+          contactModalSubmitting = false
+          contactModalCloseEl.disabled = false
+
+          if (!result.ok) {
+            showContactFormError(result.data.error || 'Unable to send your message. Please try again.')
+            contactSubmitBtnEl.disabled = false
+            contactSubmitBtnEl.textContent = 'Contact Seller'
+            return
+          }
+
+          showContactSuccess()
+        })
+        .catch(function () {
+          contactModalSubmitting = false
+          contactModalCloseEl.disabled = false
+          showContactFormError('Unable to send your message. Please check your connection and try again.')
+          contactSubmitBtnEl.disabled = false
+          contactSubmitBtnEl.textContent = 'Contact Seller'
+        })
     }
 
     carouselPrevEl.addEventListener('click', function () {
@@ -766,6 +1157,16 @@
 
     contactBtnDesktopEl.addEventListener('click', handleContactClick)
     contactBtnMobileEl.addEventListener('click', handleContactClick)
+    contactFormEl.addEventListener('submit', handleContactSubmit)
+    contactModalCloseEl.addEventListener('click', closeContactModal)
+    contactModalBackdropEl.addEventListener('click', closeContactModal)
+    contactDoneBtnEl.addEventListener('click', closeContactModal)
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !contactModalEl.classList.contains('hidden')) {
+        closeContactModal()
+      }
+    })
 
     if (!listingId) {
       showError('No listing ID provided.')
