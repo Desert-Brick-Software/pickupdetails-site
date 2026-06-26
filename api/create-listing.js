@@ -127,7 +127,7 @@ If you're interested, please review the details and submit a contact request thr
       <p style="font-size: 18px; font-weight: 600; margin: 0 0 24px;">Your PickupDetails listing has been created successfully.</p>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Share Your Listing</h2>
-      <p style="margin: 0 0 8px;">Share your listing link anywhere you're selling — Facebook Marketplace, Craigslist, OfferUp, and more. Buyers can review pickup information, availability, and other details before contacting you.</p>
+      <p style="margin: 0 0 8px;">Share your listing link anywhere you're selling — Facebook Marketplace, Craigslist, OfferUp, and more. Buyers can review your pickup details before contacting you, helping reduce repetitive questions and unnecessary back-and-forth.</p>
       <p style="margin: 0 0 24px;"><a href="${publicUrl}" style="color: #2563eb;">${publicUrl}</a></p>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Suggested Marketplace Post</h2>
