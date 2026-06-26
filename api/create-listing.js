@@ -1,4 +1,5 @@
 import { supabase } from './lib/supabase'
+import { buildPublicListingUrl } from './lib/public-listing-url'
 import { Resend } from 'resend'
 import crypto from 'crypto'
 import formidable from 'formidable'
@@ -233,7 +234,7 @@ export default async function handler(req, res) {
     }
 
     const editUrl = `https://pickupdetails.com/edit.html?token=${edit_token}`
-    const publicUrl = `https://pickupdetails.com/listing.html?id=${listing.id}`
+    const publicUrl = buildPublicListingUrl(title, listing.id)
 
     let emailSent = true
 

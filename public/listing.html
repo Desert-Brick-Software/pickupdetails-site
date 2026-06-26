@@ -859,7 +859,30 @@
 
   <script>
     const params = new URLSearchParams(window.location.search)
-    const listingId = params.get('id')
+    let listingId = params.get('id')
+
+    function extractUuidSuffixFromSlug(slug) {
+      var match = String(slug || '').match(/-([0-9a-f]{8})$/i)
+      return match ? match[1].toLowerCase() : null
+    }
+
+    function getListingLookup() {
+      if (listingId) {
+        return { type: 'id', value: listingId }
+      }
+
+      var pathMatch = window.location.pathname.match(/^\/l\/([^/]+)\/?$/)
+      if (pathMatch) {
+        var suffix = extractUuidSuffixFromSlug(pathMatch[1])
+        if (suffix) {
+          return { type: 'suffix', value: suffix }
+        }
+      }
+
+      return null
+    }
+
+    var listingLookup = getListingLookup()
 
     const loadingEl = document.getElementById('loading')
     const errorStateEl = document.getElementById('error-state')
@@ -1219,10 +1242,14 @@
       }
     })
 
-    if (!listingId) {
+    if (!listingLookup) {
       showError('No listing ID provided.')
     } else {
-      fetch('/api/get-public-listing?id=' + encodeURIComponent(listingId))
+      var apiUrl = listingLookup.type === 'id'
+        ? '/api/get-public-listing?id=' + encodeURIComponent(listingLookup.value)
+        : '/api/get-public-listing?suffix=' + encodeURIComponent(listingLookup.value)
+
+      fetch(apiUrl)
         .then(function (res) {
           return res.json().then(function (data) {
             return { ok: res.ok, status: res.status, data: data }
@@ -1241,6 +1268,7 @@
           }
 
           const listing = result.data.listing
+          listingId = listing.id
           titleEl.textContent = listing.title || 'Untitled Listing'
           priceEl.textContent = formatPrice(listing.price)
           renderStatusBadge(listing.status)

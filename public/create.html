@@ -237,6 +237,46 @@
       display: none;
     }
 
+    .success-link-box {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f0f4f8;
+      border: 1px solid #d8e2ec;
+      border-radius: 6px;
+    }
+
+    .success-link-label {
+      font-size: 13px;
+      font-weight: bold;
+      margin: 0 0 8px;
+      color: #333;
+    }
+
+    .success-link-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .success-link-input {
+      flex: 1;
+      min-width: 0;
+      padding: 10px;
+      font-size: 13px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+      color: #333;
+    }
+
+    .copy-link-btn {
+      width: auto;
+      margin-top: 0;
+      padding: 10px 14px;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
     .footer-note {
       margin-top: 16px;
       font-size: 12px;
@@ -538,7 +578,46 @@
           } else {
             message += ' A confirmation email with your edit link has been sent.'
           }
+
+          if (result.data.publicUrl) {
+            message += '<div class="success-link-box">'
+              + '<p class="success-link-label">Share your listing</p>'
+              + '<div class="success-link-row">'
+              + '<input type="text" class="success-link-input" id="public-url-input" readonly value="' + result.data.publicUrl.replace(/"/g, '&quot;') + '" />'
+              + '<button type="button" class="copy-link-btn" id="copy-public-url-btn">Copy link</button>'
+              + '</div></div>'
+          }
+
           showStatus(message, 'success')
+
+          var copyBtn = document.getElementById('copy-public-url-btn')
+          if (copyBtn) {
+            copyBtn.addEventListener('click', function () {
+              var input = document.getElementById('public-url-input')
+              var url = input ? input.value : result.data.publicUrl
+
+              function showCopied() {
+                copyBtn.textContent = 'Copied!'
+                setTimeout(function () {
+                  copyBtn.textContent = 'Copy link'
+                }, 2000)
+              }
+
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(url).then(showCopied).catch(function () {
+                  if (input) {
+                    input.select()
+                    document.execCommand('copy')
+                    showCopied()
+                  }
+                })
+              } else if (input) {
+                input.select()
+                document.execCommand('copy')
+                showCopied()
+              }
+            })
+          }
         })
         .catch(function () {
           showStatus('Could not process one of your photos. Try a different image or submit without photos.', 'error')
