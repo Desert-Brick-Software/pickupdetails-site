@@ -22,7 +22,7 @@
     }
 
     .brand-header {
-      padding: 16px 24px;
+      padding: 20px 24px;
       background: white;
       border-bottom: 1px solid #e5e5e5;
     }
@@ -32,7 +32,10 @@
       margin: 0 auto;
       display: flex;
       align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
       gap: 16px;
+      text-align: center;
     }
 
     .brand-logo {
@@ -69,6 +72,7 @@
 
     .listing-main {
       min-width: 0;
+      padding-right: 4px;
     }
 
     .listing-media {
@@ -76,7 +80,7 @@
     }
 
     h1 {
-      margin: 0 0 10px;
+      margin: 0 0 12px;
       font-size: 22px;
       line-height: 1.3;
       color: #222;
@@ -86,26 +90,26 @@
       font-size: 22px;
       font-weight: bold;
       color: #2d4f73;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .status-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 7px 14px 7px 12px;
+      gap: 10px;
+      padding: 9px 18px 9px 14px;
       border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       letter-spacing: 0.02em;
       white-space: nowrap;
-      margin-bottom: 22px;
+      margin-bottom: 26px;
     }
 
     .status-badge::before {
       content: '';
-      width: 9px;
-      height: 9px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       flex-shrink: 0;
     }
@@ -264,17 +268,20 @@
     }
 
     .bottom-cta {
-      margin-top: 32px;
-      padding: 32px 28px;
+      margin-top: 36px;
+      padding: 36px 36px 28px;
       background: #e8eef4;
       border-radius: 10px;
-      display: flex;
-      align-items: center;
-      gap: 28px;
     }
 
-    .bottom-cta-logo {
-      height: 40px;
+    .bottom-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .bottom-cta-icon {
+      height: 78px;
       width: auto;
       flex-shrink: 0;
     }
@@ -282,21 +289,25 @@
     .bottom-cta-content {
       flex: 1;
       text-align: center;
+      min-width: 0;
     }
 
     .bottom-cta-heading {
-      margin: 0 0 8px;
-      font-size: 20px;
+      margin: 0 0 10px;
+      font-size: 21px;
       font-weight: 600;
       color: #222;
       line-height: 1.3;
     }
 
     .bottom-cta-body {
-      margin: 0 0 14px;
+      margin: 0 0 16px;
       font-size: 15px;
-      line-height: 1.55;
+      line-height: 1.6;
       color: #444;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .bottom-cta-link {
@@ -311,15 +322,18 @@
       text-decoration: underline;
     }
 
+    .bottom-cta-divider {
+      border-top: 1px solid rgba(45, 79, 115, 0.14);
+      margin: 28px 0 20px;
+    }
+
     .trust-strip {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 8px 24px;
-      margin-top: 24px;
-      padding: 0 8px;
+      gap: 10px 28px;
       font-size: 13px;
-      color: #888;
+      color: #5a6573;
     }
 
     .trust-item {
@@ -327,21 +341,21 @@
     }
 
     .site-footer {
-      margin-top: 32px;
-      padding-top: 24px;
+      margin-top: 24px;
+      padding-top: 20px;
       border-top: 1px solid #e5e5e5;
       text-align: center;
       font-size: 13px;
       color: #777;
-      line-height: 1.7;
+      line-height: 1.6;
     }
 
     .site-footer-tagline {
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
 
     .site-footer-links {
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .site-footer a {
@@ -383,6 +397,7 @@
 
       .listing-main {
         flex: 1;
+        padding-right: 12px;
       }
 
       .listing-media {
@@ -394,12 +409,17 @@
 
       h1 {
         font-size: 26px;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
       }
 
       .price {
         font-size: 24px;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
+      }
+
+      .status-badge {
+        font-size: 14px;
+        margin-bottom: 28px;
       }
 
       .carousel-viewport img {
@@ -423,7 +443,8 @@
 
     @media (max-width: 767px) {
       .brand-tagline {
-        font-size: 15px;
+        font-size: 16px;
+        flex: 1 1 100%;
       }
 
       .listing-card {
@@ -432,18 +453,16 @@
     }
 
     @media (max-width: 600px) {
-      .brand-header-inner {
-        flex-wrap: wrap;
-        gap: 10px;
+      .brand-header {
+        padding: 18px 20px;
       }
 
       .brand-logo {
-        height: 40px;
+        height: 44px;
       }
 
       .brand-tagline {
-        font-size: 14px;
-        flex: 1 1 100%;
+        font-size: 15px;
       }
 
       .contact-btn-desktop-wrap {
@@ -455,19 +474,26 @@
       }
 
       .bottom-cta {
-        flex-direction: column;
-        padding: 24px 20px;
-        gap: 16px;
+        padding: 28px 22px 22px;
       }
 
-      .bottom-cta-logo {
-        height: 32px;
+      .bottom-cta-row {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .bottom-cta-icon {
+        height: 60px;
+      }
+
+      .bottom-cta-divider {
+        margin: 24px 0 18px;
       }
 
       .trust-strip {
         flex-direction: column;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
       }
 
       .page {
@@ -479,8 +505,8 @@
 <body>
   <header class="brand-header">
     <div class="brand-header-inner">
-      <img src="logo.png" alt="PickupDetails" class="brand-logo" />
-      <span class="brand-tagline">Better Interactions &gt; More Interactions</span>
+      <img src="logo.png" alt="PickupDetails logo" class="brand-logo" />
+      <div class="brand-tagline">Better Interactions &gt; More Interactions</div>
     </div>
   </header>
 
@@ -533,18 +559,20 @@
     </div>
 
     <div class="bottom-cta">
-      <img src="logo.png" alt="" class="bottom-cta-logo" aria-hidden="true" />
-      <div class="bottom-cta-content">
-        <h2 class="bottom-cta-heading">Selling something online?</h2>
-        <p class="bottom-cta-body">Share your pickup details once instead of answering the same questions over and over.</p>
-        <a href="create.html" class="bottom-cta-link">Create your free PickupDetails listing →</a>
+      <div class="bottom-cta-row">
+        <img src="checklist.png" alt="" class="bottom-cta-icon" aria-hidden="true" />
+        <div class="bottom-cta-content">
+          <h2 class="bottom-cta-heading">Selling something online?</h2>
+          <p class="bottom-cta-body">Share your pickup details once instead of answering the same questions over and over.</p>
+          <a href="create.html" class="bottom-cta-link">Create your free PickupDetails listing →</a>
+        </div>
       </div>
-    </div>
-
-    <div class="trust-strip">
-      <span class="trust-item">✓ Free for sellers</span>
-      <span class="trust-item">✓ Buyers don't need an account</span>
-      <span class="trust-item">✓ Built for local pickup</span>
+      <div class="bottom-cta-divider"></div>
+      <div class="trust-strip">
+        <span class="trust-item">✓ Free for sellers</span>
+        <span class="trust-item">✓ No buyer account required</span>
+        <span class="trust-item">✓ Built for local pickup</span>
+      </div>
     </div>
 
     <footer class="site-footer">
