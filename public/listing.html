@@ -482,6 +482,17 @@
       min-height: 110px;
     }
 
+    .contact-helper {
+      font-size: 12px;
+      color: #777;
+      line-height: 1.45;
+      margin-bottom: 6px;
+    }
+
+    .contact-phone-consent {
+      margin-top: 10px;
+    }
+
     .contact-reminder {
       margin-top: 14px;
       padding: 10px 12px;
@@ -803,7 +814,12 @@
           <input type="email" id="contact-buyer-email" name="buyer_email" autocomplete="email" required />
 
           <label for="contact-buyer-phone">Your phone <span style="font-weight: normal; color: #777;">(optional)</span></label>
+          <div class="contact-helper">Only include your phone number if you're okay with the seller seeing it and contacting you by text or phone.</div>
           <input type="tel" id="contact-buyer-phone" name="buyer_phone" autocomplete="tel" />
+          <label class="contact-ack-label contact-phone-consent">
+            <input type="checkbox" id="contact-phone-consent" name="phone_contact_consent" />
+            <span>I understand the seller may use this phone number to contact me about this item.</span>
+          </label>
 
           <label for="contact-buyer-message">Message</label>
           <textarea id="contact-buyer-message" name="buyer_message" required placeholder="Hi! I'm interested in this item. I'm available Saturday afternoon if it's still available."></textarea>
@@ -876,6 +892,7 @@
     const contactBuyerEmailEl = document.getElementById('contact-buyer-email')
     const contactBuyerPhoneEl = document.getElementById('contact-buyer-phone')
     const contactBuyerMessageEl = document.getElementById('contact-buyer-message')
+    const contactPhoneConsentEl = document.getElementById('contact-phone-consent')
     const contactAckMaySellEl = document.getElementById('contact-ack-may-sell')
     const contactAckIntentEl = document.getElementById('contact-ack-intent')
 
@@ -1050,6 +1067,11 @@
         return 'Please enter a valid email address.'
       }
 
+      var phone = contactBuyerPhoneEl.value.trim()
+      if (phone && !contactPhoneConsentEl.checked) {
+        return 'Please confirm that the seller may contact you by phone or text, or remove your phone number.'
+      }
+
       var message = contactBuyerMessageEl.value.trim()
       if (!message) {
         return 'Please enter a message for the seller.'
@@ -1096,7 +1118,8 @@
           buyer_phone: contactBuyerPhoneEl.value.trim() || null,
           buyer_message: contactBuyerMessageEl.value.trim(),
           acknowledge_may_sell: contactAckMaySellEl.checked,
-          acknowledge_intent_to_purchase: contactAckIntentEl.checked
+          acknowledge_intent_to_purchase: contactAckIntentEl.checked,
+          phone_contact_consent: contactPhoneConsentEl.checked
         })
       })
         .then(function (res) {

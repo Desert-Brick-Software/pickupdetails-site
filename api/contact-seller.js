@@ -82,6 +82,7 @@ export default async function handler(req, res) {
   const buyer_message = trimString(body.buyer_message)
   const acknowledge_may_sell = body.acknowledge_may_sell === true
   const acknowledge_intent_to_purchase = body.acknowledge_intent_to_purchase === true
+  const phone_contact_consent = body.phone_contact_consent === true
 
   if (!listing_id) {
     return res.status(400).json({ error: 'listing_id is required' })
@@ -111,6 +112,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'acknowledge_intent_to_purchase must be true' })
   }
 
+  if (buyer_phone && !phone_contact_consent) {
+    return res.status(400).json({ error: 'phone_contact_consent must be true when buyer_phone is provided' })
+  }
+
   try {
     const { data: listing, error } = await supabase
       .from('listings')
@@ -137,7 +142,7 @@ export default async function handler(req, res) {
     const buyer = {
       name: buyer_name,
       email: buyer_email,
-      phone: buyer_phone,
+      phone: buyer_phone && phone_contact_consent ? buyer_phone : null,
       message: buyer_message
     }
 
