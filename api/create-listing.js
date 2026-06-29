@@ -112,11 +112,7 @@ function escapeHtml(text) {
 }
 
 function buildConfirmationEmailHtml({ title, description, publicUrl, editUrl }) {
-  const marketplacePost = `${title}
-
-${description}
-
-To make pickup easier, I've posted availability, location details, and answers to common questions here:
+  const marketplacePost = `To make pickup easier, I've posted my availability, pickup location details, and answers to common questions here:
 
 ${publicUrl}
 
@@ -130,7 +126,9 @@ If you're interested, please review the details and submit a contact request thr
       <p style="margin: 0 0 8px;">Share your listing link anywhere you're selling — Facebook Marketplace, Craigslist, OfferUp, and more. Buyers can review your pickup details before contacting you, helping reduce repetitive questions and unnecessary back-and-forth.</p>
       <p style="margin: 0 0 24px;"><a href="${publicUrl}" style="color: #2563eb;">${publicUrl}</a></p>
 
-      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Suggested Marketplace Post</h2>
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Suggested Marketplace Description</h2>
+      <p style="margin: 0 0 8px;">Create your Marketplace listing as you normally would by adding your title, price, photos, condition, and any other listing details.</p>
+      <p style="margin: 0 0 8px;">Instead of writing a long description, consider using the following message in the description field to direct interested buyers to your PickupDetails listing:</p>
       <div style="background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 6px; padding: 16px; margin: 0 0 24px; white-space: pre-wrap; font-size: 14px;">${escapeHtml(marketplacePost)}</div>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Manage Your Listing</h2>
