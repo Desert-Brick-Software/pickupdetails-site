@@ -1595,7 +1595,7 @@
 
           if (!result.ok) {
             if (result.status === 404) {
-              showError('Listing not found or no longer available.')
+              showSoldState()
             } else {
               showError(formatApiError(result.data))
             }

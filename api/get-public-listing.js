@@ -90,7 +90,7 @@ export default async function handler(req, res) {
       }
 
       if (result.ambiguous) {
-        return res.status(404).json({ error: 'Listing not found' })
+        return res.status(200).json({ sold: true })
       }
     }
 
@@ -107,7 +107,7 @@ export default async function handler(req, res) {
     }
 
     if (!result.listing) {
-      return res.status(404).json({ error: 'Listing not found' })
+      return res.status(200).json({ sold: true })
     }
 
     return res.status(200).json({ listing: result.listing })

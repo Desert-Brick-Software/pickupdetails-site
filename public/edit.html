@@ -217,7 +217,7 @@
     <div id="error-state" class="message error hidden"></div>
 
     <div id="edit-form" class="hidden">
-      <div id="sold-banner" class="sold-banner hidden">This listing has been marked as sold and is no longer publicly visible.</div>
+      <div id="sold-banner" class="sold-banner hidden">This listing has been removed from public view.</div>
 
       <form id="listing-form">
         <label for="title">Title</label>
@@ -436,7 +436,7 @@
           }
           closeConfirmModal()
           setSoldState()
-          showStatus('Listing marked as sold.', 'success')
+          showStatus('Your listing has been removed from public view.', 'success')
         })
         .catch(function () {
           closeConfirmModal()

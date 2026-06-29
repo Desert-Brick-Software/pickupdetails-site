@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   try {
     const { data: existing, error: lookupError } = await supabase
       .from('listings')
-      .select('id, status')
+      .select('id')
       .eq('edit_token', edit_token.trim())
       .maybeSingle()
 
@@ -30,40 +30,16 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Listing not found' })
     }
 
-    if (String(existing.status).toLowerCase() === 'sold') {
-      return res.status(403).json({ error: 'Listing is already marked as sold' })
-    }
-
-    const updates = {
-      status: 'sold',
-      sold_at: new Date().toISOString()
-    }
-
-    let { error: updateError } = await supabase
+    const { error: deleteError } = await supabase
       .from('listings')
-      .update(updates)
+      .delete()
       .eq('edit_token', edit_token.trim())
 
-    if (updateError) {
-      const soldAtColumnMissing =
-        updateError.code === 'PGRST204' ||
-        /sold_at/i.test(updateError.message || '')
-
-      if (soldAtColumnMissing) {
-        const retry = await supabase
-          .from('listings')
-          .update({ status: 'sold' })
-          .eq('edit_token', edit_token.trim())
-
-        updateError = retry.error
-      }
-    }
-
-    if (updateError) {
+    if (deleteError) {
       return res.status(500).json({
         error: 'Failed to mark listing as sold',
-        detail: updateError.message,
-        code: updateError.code || null
+        detail: deleteError.message,
+        code: deleteError.code || null
       })
     }
 
