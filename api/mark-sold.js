@@ -1,4 +1,5 @@
 import { supabase } from './lib/supabase'
+import { deleteListingImages } from './lib/delete-listing-images'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -14,7 +15,7 @@ export default async function handler(req, res) {
   try {
     const { data: existing, error: lookupError } = await supabase
       .from('listings')
-      .select('id, status')
+      .select('id')
       .eq('edit_token', edit_token.trim())
       .maybeSingle()
 
@@ -26,17 +27,16 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Listing not found' })
     }
 
-    if (String(existing.status).toLowerCase() === 'sold') {
-      return res.status(403).json({ error: 'Listing is already marked as sold' })
-    }
+    await deleteListingImages(existing.id)
 
-    const { error: updateError } = await supabase
+    const { error: deleteError } = await supabase
       .from('listings')
-      .update({ status: 'sold' })
+      .delete()
       .eq('edit_token', edit_token.trim())
+      .eq('id', existing.id)
 
-    if (updateError) {
-      return res.status(500).json({ error: 'Failed to mark listing as sold' })
+    if (deleteError) {
+      return res.status(500).json({ error: 'Failed to remove listing' })
     }
 
     return res.status(200).json({ success: true })
