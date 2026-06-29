@@ -32,26 +32,25 @@ async function fetchListingBySuffix(suffix) {
     return { invalidSuffix: true }
   }
 
-  const { data, error } = await supabase
-    .from('listings')
-    .select(SAFE_FIELDS)
-    .filter('id::text', 'ilike', `${normalized}-%`)
+  const { data, error } = await supabase.rpc('get_listing_by_uuid_suffix', {
+    suffix: normalized
+  })
 
   if (error) {
     return { error }
   }
 
-  const active = (data || []).filter(isActiveListing)
+  const rows = Array.isArray(data) ? data : []
 
-  if (active.length === 0) {
+  if (rows.length === 0) {
     return { listing: null }
   }
 
-  if (active.length > 1) {
+  if (rows.length > 1) {
     return { ambiguous: true }
   }
 
-  return { listing: active[0] }
+  return { listing: rows[0] }
 }
 
 export default async function handler(req, res) {
