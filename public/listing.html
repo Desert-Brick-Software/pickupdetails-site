@@ -622,6 +622,75 @@
       color: #444;
     }
 
+    .smart-prompt-view {
+      padding: 4px 0 2px;
+    }
+
+    .smart-prompt-body {
+      margin: 0 0 20px;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #444;
+    }
+
+    .smart-prompt-status {
+      margin: 14px 0 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .smart-prompt-followup {
+      margin: 16px 0 0;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .smart-prompt-actions {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .smart-prompt-btn {
+      display: block;
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .smart-prompt-btn-cancel {
+      background: white;
+      color: #2d4f73;
+      border: 1px solid #c5d3e0;
+    }
+
+    .smart-prompt-btn-cancel:hover {
+      background: #f5f8fb;
+    }
+
+    .smart-prompt-btn-send {
+      background-color: #2d4f73;
+      color: white;
+      border: none;
+    }
+
+    .smart-prompt-btn-send:hover:not(:disabled) {
+      background-color: #1f3a55;
+    }
+
+    .smart-prompt-btn-send:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .contact-success-note {
       margin: 0 0 20px;
       font-size: 14px;
@@ -909,6 +978,20 @@
         <p class="contact-success-note">Thank you for taking a moment to review the listing before contacting the seller.</p>
         <button type="button" class="contact-submit-btn" id="contact-done-btn">Done</button>
       </div>
+
+      <div id="smart-prompt-view" class="smart-prompt-view hidden" role="dialog" aria-labelledby="smart-prompt-title">
+        <h2 id="smart-prompt-title" class="contact-modal-title">Looks like your question may already be answered.</h2>
+        <p class="smart-prompt-body">
+          This listing is currently marked as:
+          <span id="smart-prompt-status" class="smart-prompt-status">🟢 Available</span>
+        </p>
+        <p class="smart-prompt-followup">If that's all you wanted to know, there's no need to send this message.</p>
+        <p class="smart-prompt-followup">If you have another question or you're ready to purchase the item, you can still contact the seller.</p>
+        <div class="smart-prompt-actions">
+          <button type="button" class="smart-prompt-btn smart-prompt-btn-cancel" id="smart-prompt-cancel-btn">Cancel</button>
+          <button type="button" class="smart-prompt-btn smart-prompt-btn-send" id="smart-prompt-send-btn">Send Anyway</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -978,11 +1061,17 @@
     const contactPhoneConsentEl = document.getElementById('contact-phone-consent')
     const contactAckMaySellEl = document.getElementById('contact-ack-may-sell')
     const contactAckIntentEl = document.getElementById('contact-ack-intent')
+    const smartPromptViewEl = document.getElementById('smart-prompt-view')
+    const smartPromptStatusEl = document.getElementById('smart-prompt-status')
+    const smartPromptCancelBtnEl = document.getElementById('smart-prompt-cancel-btn')
+    const smartPromptSendBtnEl = document.getElementById('smart-prompt-send-btn')
 
     let carouselUrls = []
     let carouselIndex = 0
     let touchStartX = 0
     let contactModalSubmitting = false
+    let currentListingStatus = 'active'
+    let smartPromptBypassed = false
 
     var PHONE_CONSENT_ERROR = 'Please confirm that the seller may contact you by phone or text, or remove your phone number.'
 
@@ -1046,9 +1135,90 @@
     }
 
     function renderStatusBadge(status) {
+      currentListingStatus = String(status || 'active').toLowerCase()
       var display = statusDisplay(status)
       statusBadgeEl.textContent = display.label
       statusBadgeEl.className = 'status-badge ' + display.className
+    }
+
+    function normalizeBuyerMessage(message) {
+      return String(message || '')
+        .toLowerCase()
+        .replace(/[^\w\s']/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+    }
+
+    function stripMessageGreeting(message) {
+      return message
+        .replace(/^(hi|hello|hey|yo|dear seller|good (morning|afternoon|evening))\b[,\s!]*/g, '')
+        .replace(/\b(please|thanks|thank you|thx)\b/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
+    }
+
+    function isAvailabilityInquiry(message) {
+      var normalized = normalizeBuyerMessage(message)
+      if (!normalized) {
+        return false
+      }
+
+      var stripped = stripMessageGreeting(normalized)
+      if (!stripped) {
+        return false
+      }
+
+      var availabilityPatterns = [
+        /^is (this|it|the item) (still )?(available|for sale|there)\??$/,
+        /^(still )?(available|for sale)\??$/,
+        /^(do you )?still have (it|this)( available)?\??$/,
+        /^(still )?have (it|this)( available)?\??$/,
+        /^is (this|it) still (available|for sale|there)\??$/,
+        /^(any chance )?(this|it) is still (available|for sale)\??$/,
+        /^still (available|for sale|have it|got it)\??$/,
+        /^available\??$/,
+        /^for sale\??$/,
+        /^still there\??$/,
+        /^is it still there\??$/
+      ]
+
+      for (var i = 0; i < availabilityPatterns.length; i++) {
+        if (availabilityPatterns[i].test(stripped)) {
+          return true
+        }
+      }
+
+      if (stripped.length > 80) {
+        return false
+      }
+
+      var hasAvailabilityAsk = /\b(still available|still for sale|still have|still got|is (this|it) available|is (this|it) still|available\??$|for sale\??$)\b/.test(stripped)
+      var hasOtherIntent = /\b(pickup|pick up|buy|purchase|interested in|meet|cash|pay|want to|take it|grab|get it|when can|where can|how much|price|offer|negotiate|monday|tuesday|wednesday|thursday|friday|saturday|sunday|tomorrow|today|afternoon|morning|evening|i am available|i'm available|im available)\b/.test(stripped)
+
+      return hasAvailabilityAsk && !hasOtherIntent
+    }
+
+    function isListingMarkedAvailable() {
+      var normalized = String(currentListingStatus || 'active').toLowerCase()
+      return normalized !== 'pending' && normalized !== 'sold'
+    }
+
+    function shouldShowAvailabilitySmartPrompt(message) {
+      return isListingMarkedAvailable() && isAvailabilityInquiry(message)
+    }
+
+    function hideSmartPromptView() {
+      smartPromptViewEl.classList.add('hidden')
+      contactFormViewEl.classList.remove('hidden')
+      contactModalCloseEl.classList.remove('hidden')
+    }
+
+    function showSmartPromptView() {
+      smartPromptStatusEl.textContent = '🟢 Available'
+      contactFormViewEl.classList.add('hidden')
+      smartPromptViewEl.classList.remove('hidden')
+      contactModalCloseEl.classList.add('hidden')
+      smartPromptCancelBtnEl.focus()
     }
 
     function parseImageUrls(imageUrls) {
@@ -1133,13 +1303,17 @@
     function resetContactModal() {
       contactFormViewEl.classList.remove('hidden')
       contactSuccessViewEl.classList.add('hidden')
+      smartPromptViewEl.classList.add('hidden')
       contactModalCloseEl.classList.remove('hidden')
       contactFormEl.reset()
       updatePhoneConsentVisibility()
       clearContactFormError()
       contactSubmitBtnEl.disabled = false
       contactSubmitBtnEl.textContent = 'Contact Seller'
+      smartPromptSendBtnEl.disabled = false
+      smartPromptSendBtnEl.textContent = 'Send Anyway'
       contactModalSubmitting = false
+      smartPromptBypassed = false
     }
 
     function openContactModal() {
@@ -1154,6 +1328,10 @@
       if (contactModalSubmitting) {
         return
       }
+      if (!smartPromptViewEl.classList.contains('hidden')) {
+        hideSmartPromptView()
+        return
+      }
       contactModalEl.classList.add('hidden')
       contactModalEl.setAttribute('aria-hidden', 'true')
       document.body.style.overflow = ''
@@ -1161,6 +1339,7 @@
 
     function showContactSuccess() {
       contactFormViewEl.classList.add('hidden')
+      smartPromptViewEl.classList.add('hidden')
       contactSuccessViewEl.classList.remove('hidden')
       contactModalCloseEl.classList.add('hidden')
       clearContactFormError()
@@ -1211,19 +1390,12 @@
       openContactModal()
     }
 
-    function handleContactSubmit(e) {
-      e.preventDefault()
-      clearContactFormError()
-
-      var validationError = validateContactForm()
-      if (validationError) {
-        showContactFormError(validationError)
-        return
-      }
-
+    function submitContactForm() {
       contactModalSubmitting = true
       contactSubmitBtnEl.disabled = true
       contactSubmitBtnEl.textContent = 'Sending...'
+      smartPromptSendBtnEl.disabled = true
+      smartPromptSendBtnEl.textContent = 'Sending...'
       contactModalCloseEl.disabled = true
 
       var phone = contactBuyerPhoneEl.value.trim()
@@ -1252,9 +1424,12 @@
           contactModalCloseEl.disabled = false
 
           if (!result.ok) {
+            hideSmartPromptView()
             showContactFormError(result.data.error || 'Unable to send your message. Please try again.')
             contactSubmitBtnEl.disabled = false
             contactSubmitBtnEl.textContent = 'Contact Seller'
+            smartPromptSendBtnEl.disabled = false
+            smartPromptSendBtnEl.textContent = 'Send Anyway'
             return
           }
 
@@ -1263,10 +1438,47 @@
         .catch(function () {
           contactModalSubmitting = false
           contactModalCloseEl.disabled = false
+          hideSmartPromptView()
           showContactFormError('Unable to send your message. Please check your connection and try again.')
           contactSubmitBtnEl.disabled = false
           contactSubmitBtnEl.textContent = 'Contact Seller'
+          smartPromptSendBtnEl.disabled = false
+          smartPromptSendBtnEl.textContent = 'Send Anyway'
         })
+    }
+
+    function handleContactSubmit(e) {
+      e.preventDefault()
+      clearContactFormError()
+
+      var validationError = validateContactForm()
+      if (validationError) {
+        showContactFormError(validationError)
+        return
+      }
+
+      var message = contactBuyerMessageEl.value.trim()
+      if (!smartPromptBypassed && shouldShowAvailabilitySmartPrompt(message)) {
+        showSmartPromptView()
+        return
+      }
+
+      submitContactForm()
+    }
+
+    function handleSmartPromptCancel() {
+      if (contactModalSubmitting) {
+        return
+      }
+      hideSmartPromptView()
+    }
+
+    function handleSmartPromptSend() {
+      if (contactModalSubmitting) {
+        return
+      }
+      smartPromptBypassed = true
+      submitContactForm()
     }
 
     carouselPrevEl.addEventListener('click', function () {
@@ -1302,6 +1514,8 @@
     contactBtnMobileEl.addEventListener('click', handleContactClick)
     contactFormEl.addEventListener('submit', handleContactSubmit)
     contactBuyerPhoneEl.addEventListener('input', updatePhoneConsentVisibility)
+    smartPromptCancelBtnEl.addEventListener('click', handleSmartPromptCancel)
+    smartPromptSendBtnEl.addEventListener('click', handleSmartPromptSend)
     contactModalCloseEl.addEventListener('click', closeContactModal)
     contactModalBackdropEl.addEventListener('click', closeContactModal)
     contactDoneBtnEl.addEventListener('click', closeContactModal)
