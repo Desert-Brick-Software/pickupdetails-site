@@ -34,15 +34,15 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'Listing is already marked as sold' })
     }
 
-    const soldAt = new Date().toISOString()
+    const updates = {
+      status: 'sold',
+      sold_at: new Date().toISOString()
+    }
+
     let { error: updateError } = await supabase
       .from('listings')
-      .update({
-        status: 'sold',
-        sold_at: soldAt
-      })
+      .update(updates)
       .eq('edit_token', edit_token.trim())
-      .eq('id', existing.id)
 
     if (updateError) {
       const soldAtColumnMissing =
@@ -54,7 +54,6 @@ export default async function handler(req, res) {
           .from('listings')
           .update({ status: 'sold' })
           .eq('edit_token', edit_token.trim())
-          .eq('id', existing.id)
 
         updateError = retry.error
       }
