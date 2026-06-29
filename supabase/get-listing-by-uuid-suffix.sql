@@ -1,4 +1,4 @@
--- Lookup active listings by the first 8 hex characters of listing UUID.
+-- Lookup active and sold listings by the first 8 hex characters of listing UUID.
 -- Used by /l/<slug>-<suffix> public URLs (api/get-public-listing.js).
 --
 -- Run in Supabase → SQL → New query.
@@ -28,7 +28,7 @@ AS $$
     FROM public.listings
     WHERE suffix ~ '^[0-9a-f]{8}$'
       AND lower(left(id::text, 8)) = lower(suffix)
-      AND lower(status::text) = 'active'
+      AND lower(status::text) IN ('active', 'sold')
     LIMIT 2
   ) matches;
 $$;

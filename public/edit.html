@@ -217,7 +217,7 @@
     <div id="error-state" class="message error hidden"></div>
 
     <div id="edit-form" class="hidden">
-      <div id="sold-banner" class="sold-banner hidden">This listing is no longer active. You can remove it from PickupDetails below.</div>
+      <div id="sold-banner" class="sold-banner hidden">This listing has been marked as sold and is no longer publicly visible.</div>
 
       <form id="listing-form">
         <label for="title">Title</label>
@@ -237,8 +237,8 @@
         </div>
       </form>
 
-      <div class="sold-section">
-        <p>Finished selling? Remove your listing from PickupDetails.</p>
+      <div id="sold-section" class="sold-section">
+        <p>Finished selling? Mark this listing as sold so buyers know it's no longer available.</p>
         <button type="button" id="sold-btn" class="btn-sold">Mark as Sold</button>
       </div>
 
@@ -250,7 +250,7 @@
     <div class="confirm-modal-backdrop" id="confirm-modal-backdrop"></div>
     <div class="confirm-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
       <h2 id="confirm-modal-title" class="confirm-modal-title">Mark listing as sold?</h2>
-      <p class="confirm-modal-message">This will permanently remove your listing from PickupDetails. This action cannot be undone.</p>
+      <p class="confirm-modal-message">Your listing will no longer be publicly visible. Buyers who visit your link will see that the item has been sold.</p>
       <div class="confirm-modal-actions">
         <button type="button" id="confirm-sold-btn" class="btn-sold">Mark as Sold</button>
         <button type="button" id="confirm-cancel-btn" class="btn-secondary">Cancel</button>
@@ -273,6 +273,7 @@
     const availabilityEl = document.getElementById('availability')
     const saveBtnEl = document.getElementById('save-btn')
     const soldBtnEl = document.getElementById('sold-btn')
+    const soldSectionEl = document.getElementById('sold-section')
     const statusMessageEl = document.getElementById('status-message')
     const confirmModalEl = document.getElementById('confirm-modal')
     const confirmModalBackdropEl = document.getElementById('confirm-modal-backdrop')
@@ -310,11 +311,13 @@
 
     function setSoldState() {
       soldBannerEl.classList.remove('hidden')
+      soldSectionEl.classList.add('hidden')
       titleEl.disabled = true
       descriptionEl.disabled = true
       priceEl.disabled = true
       availabilityEl.disabled = true
       saveBtnEl.disabled = true
+      soldBtnEl.disabled = true
     }
 
     function populateForm(listing) {
@@ -424,18 +427,20 @@
         .then(function (result) {
           if (!result.ok) {
             closeConfirmModal()
-            showStatus(result.data.error || 'Failed to remove listing.', 'error')
+            showStatus(result.data.error || 'Failed to mark listing as sold.', 'error')
             soldBtnEl.disabled = false
             saveBtnEl.disabled = false
             confirmSoldBtnEl.disabled = false
             confirmCancelBtnEl.disabled = false
             return
           }
-          window.location.href = '/listing-removed.html'
+          closeConfirmModal()
+          setSoldState()
+          showStatus('Listing marked as sold.', 'success')
         })
         .catch(function () {
           closeConfirmModal()
-          showStatus('Failed to remove listing. Please try again.', 'error')
+          showStatus('Failed to mark listing as sold. Please try again.', 'error')
           soldBtnEl.disabled = false
           saveBtnEl.disabled = false
           confirmSoldBtnEl.disabled = false

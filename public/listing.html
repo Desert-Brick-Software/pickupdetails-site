@@ -374,6 +374,49 @@
       color: #ccc;
     }
 
+    .sold-content {
+      text-align: center;
+      padding: 12px 8px 8px;
+    }
+
+    .sold-heading {
+      margin: 0 0 12px;
+      font-size: 24px;
+      line-height: 1.35;
+      color: #222;
+    }
+
+    .sold-body {
+      margin: 0 0 12px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #444;
+    }
+
+    .sold-cta-link {
+      display: inline-block;
+      margin: 0 0 20px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #2d4f73;
+      text-decoration: none;
+    }
+
+    .sold-cta-link:hover {
+      color: #1f3a55;
+      text-decoration: underline;
+    }
+
+    .sold-trust-strip {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      color: #555;
+      line-height: 1.4;
+    }
+
     .message {
       padding: 10px 12px;
       border-radius: 4px;
@@ -727,6 +770,18 @@
       <div id="loading">Loading...</div>
       <div id="error-state" class="message error hidden"></div>
 
+      <div id="sold-content" class="sold-content hidden">
+        <h1 class="sold-heading">This item has been sold 🎉</h1>
+        <p class="sold-body">The seller has marked this item as sold.</p>
+        <p class="sold-body">Looking to sell something yourself?</p>
+        <a href="/create.html" class="sold-cta-link">Create your free PickupDetails listing →</a>
+        <div class="sold-trust-strip">
+          <span class="trust-item">✓ Free for sellers</span>
+          <span class="trust-item">✓ No buyer account required</span>
+          <span class="trust-item">✓ Share your pickup details once instead of answering the same questions over and over.</span>
+        </div>
+      </div>
+
       <div id="listing-content" class="hidden">
         <div class="listing-grid">
           <div class="listing-main">
@@ -770,7 +825,7 @@
       </div>
     </div>
 
-    <div class="bottom-cta">
+    <div id="bottom-cta" class="bottom-cta">
       <div class="bottom-cta-row">
         <img src="checklist.png" alt="" class="bottom-cta-icon" aria-hidden="true" />
         <div class="bottom-cta-content">
@@ -886,6 +941,8 @@
 
     const loadingEl = document.getElementById('loading')
     const errorStateEl = document.getElementById('error-state')
+    const soldContentEl = document.getElementById('sold-content')
+    const bottomCtaEl = document.getElementById('bottom-cta')
     const listingContentEl = document.getElementById('listing-content')
     const titleEl = document.getElementById('title')
     const priceEl = document.getElementById('price')
@@ -933,9 +990,22 @@
       document.body.classList.remove('has-listing')
       loadingEl.classList.add('hidden')
       listingContentEl.classList.add('hidden')
+      soldContentEl.classList.add('hidden')
+      bottomCtaEl.classList.remove('hidden')
       contactMobileBarEl.classList.add('hidden')
       errorStateEl.textContent = message
       errorStateEl.classList.remove('hidden')
+    }
+
+    function showSoldState() {
+      document.body.classList.remove('has-listing')
+      loadingEl.classList.add('hidden')
+      listingContentEl.classList.add('hidden')
+      errorStateEl.classList.add('hidden')
+      contactMobileBarEl.classList.add('hidden')
+      bottomCtaEl.classList.add('hidden')
+      soldContentEl.classList.remove('hidden')
+      document.title = 'Item Sold | Pickup Details'
     }
 
     function formatApiError(data) {
@@ -1264,6 +1334,11 @@
             } else {
               showError(formatApiError(result.data))
             }
+            return
+          }
+
+          if (result.data.sold) {
+            showSoldState()
             return
           }
 

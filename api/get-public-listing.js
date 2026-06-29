@@ -3,8 +3,22 @@ import { extractUuidSuffixFromSlug } from './lib/public-listing-url'
 
 const SAFE_FIELDS = 'id, title, description, price, availability, location, image_urls, status, created_at'
 
-function isActiveListing(listing) {
-  return listing && String(listing.status).toLowerCase() === 'active'
+function classifyListing(listing) {
+  if (!listing) {
+    return { listing: null }
+  }
+
+  const status = String(listing.status).toLowerCase()
+
+  if (status === 'active') {
+    return { listing }
+  }
+
+  if (status === 'sold') {
+    return { sold: true }
+  }
+
+  return { listing: null }
 }
 
 async function fetchListingById(id) {
@@ -18,11 +32,7 @@ async function fetchListingById(id) {
     return { error }
   }
 
-  if (!isActiveListing(data)) {
-    return { listing: null }
-  }
-
-  return { listing: data }
+  return classifyListing(data)
 }
 
 async function fetchListingBySuffix(suffix) {
@@ -50,7 +60,7 @@ async function fetchListingBySuffix(suffix) {
     return { ambiguous: true }
   }
 
-  return { listing: rows[0] }
+  return classifyListing(rows[0])
 }
 
 export default async function handler(req, res) {
@@ -90,6 +100,10 @@ export default async function handler(req, res) {
         detail: result.error.message,
         code: result.error.code || null
       })
+    }
+
+    if (result.sold) {
+      return res.status(200).json({ sold: true })
     }
 
     if (!result.listing) {

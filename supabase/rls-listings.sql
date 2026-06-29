@@ -25,8 +25,7 @@ CREATE POLICY "anon_insert_listings"
   WITH CHECK (true);
 
 -- Get listing by edit token (api/get-listing.js)
--- Update by edit token (api/update-listing.js)
--- Delete by edit token (api/mark-sold.js)
+-- Update / mark sold by edit token (api/update-listing.js, api/mark-sold.js)
 DROP POLICY IF EXISTS "anon_select_listings" ON public.listings;
 CREATE POLICY "anon_select_listings"
   ON public.listings
@@ -42,7 +41,7 @@ CREATE POLICY "anon_update_listings"
   USING (true)
   WITH CHECK (true);
 
--- Delete listing by edit token (api/mark-sold.js)
+-- Delete listing (reserved for future automatic cleanup; not used by mark-sold)
 DROP POLICY IF EXISTS "anon_delete_listings" ON public.listings;
 CREATE POLICY "anon_delete_listings"
   ON public.listings
