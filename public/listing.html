@@ -627,17 +627,26 @@
     }
 
     .smart-prompt-body {
-      margin: 0 0 20px;
+      margin: 0 0 12px;
       font-size: 15px;
       line-height: 1.55;
       color: #444;
     }
 
-    .smart-prompt-status {
-      margin: 14px 0 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: #222;
+    .smart-prompt-list {
+      margin: 0 0 16px;
+      padding-left: 22px;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #444;
+    }
+
+    .smart-prompt-list li {
+      margin-bottom: 4px;
+    }
+
+    .smart-prompt-list li:last-child {
+      margin-bottom: 0;
     }
 
     .smart-prompt-followup {
@@ -980,13 +989,16 @@
       </div>
 
       <div id="smart-prompt-view" class="smart-prompt-view hidden" role="dialog" aria-labelledby="smart-prompt-title">
-        <h2 id="smart-prompt-title" class="contact-modal-title">Looks like your question may already be answered.</h2>
-        <p class="smart-prompt-body">
-          This listing is currently marked as:
-          <span id="smart-prompt-status" class="smart-prompt-status">🟢 Available</span>
-        </p>
-        <p class="smart-prompt-followup">If that's all you wanted to know, there's no need to send this message.</p>
-        <p class="smart-prompt-followup">If you have another question or you're ready to purchase the item, you can still contact the seller.</p>
+        <h2 id="smart-prompt-title" class="contact-modal-title">Good news!</h2>
+        <p class="smart-prompt-body">This item is currently marked as <strong>Available</strong>.</p>
+        <p class="smart-prompt-body">The seller has also shared:</p>
+        <ul class="smart-prompt-list">
+          <li>Pickup availability</li>
+          <li>Pickup location</li>
+          <li>Answers to common questions</li>
+        </ul>
+        <p class="smart-prompt-followup">You may find the information you're looking for elsewhere on this page.</p>
+        <p class="smart-prompt-followup">If you still have a question or you're ready to purchase the item, you can still contact the seller.</p>
         <div class="smart-prompt-actions">
           <button type="button" class="smart-prompt-btn smart-prompt-btn-cancel" id="smart-prompt-cancel-btn">Cancel</button>
           <button type="button" class="smart-prompt-btn smart-prompt-btn-send" id="smart-prompt-send-btn">Send Anyway</button>
@@ -1062,7 +1074,6 @@
     const contactAckMaySellEl = document.getElementById('contact-ack-may-sell')
     const contactAckIntentEl = document.getElementById('contact-ack-intent')
     const smartPromptViewEl = document.getElementById('smart-prompt-view')
-    const smartPromptStatusEl = document.getElementById('smart-prompt-status')
     const smartPromptCancelBtnEl = document.getElementById('smart-prompt-cancel-btn')
     const smartPromptSendBtnEl = document.getElementById('smart-prompt-send-btn')
 
@@ -1072,6 +1083,8 @@
     let contactModalSubmitting = false
     let currentListingStatus = 'active'
     let smartPromptBypassed = false
+
+    var AVAILABILITY_PROMPT_DISMISSED_KEY = 'pickupdetails:availability-prompt-dismissed'
 
     var PHONE_CONSENT_ERROR = 'Please confirm that the seller may contact you by phone or text, or remove your phone number.'
 
@@ -1203,8 +1216,46 @@
       return normalized !== 'pending' && normalized !== 'sold'
     }
 
+    function readAvailabilityPromptDismissedListingIds() {
+      try {
+        var stored = localStorage.getItem(AVAILABILITY_PROMPT_DISMISSED_KEY)
+        if (!stored) {
+          return []
+        }
+        var parsed = JSON.parse(stored)
+        return Array.isArray(parsed) ? parsed.filter(Boolean) : []
+      } catch {
+        return []
+      }
+    }
+
+    function isAvailabilityPromptDismissed(id) {
+      if (!id) {
+        return false
+      }
+      return readAvailabilityPromptDismissedListingIds().indexOf(id) !== -1
+    }
+
+    function dismissAvailabilityPromptForListing(id) {
+      if (!id) {
+        return
+      }
+      var dismissedIds = readAvailabilityPromptDismissedListingIds()
+      if (dismissedIds.indexOf(id) !== -1) {
+        return
+      }
+      dismissedIds.push(id)
+      try {
+        localStorage.setItem(AVAILABILITY_PROMPT_DISMISSED_KEY, JSON.stringify(dismissedIds))
+      } catch {
+        // Ignore storage errors; submission still proceeds.
+      }
+    }
+
     function shouldShowAvailabilitySmartPrompt(message) {
-      return isListingMarkedAvailable() && isAvailabilityInquiry(message)
+      return isListingMarkedAvailable()
+        && isAvailabilityInquiry(message)
+        && !isAvailabilityPromptDismissed(listingId)
     }
 
     function hideSmartPromptView() {
@@ -1214,7 +1265,6 @@
     }
 
     function showSmartPromptView() {
-      smartPromptStatusEl.textContent = '🟢 Available'
       contactFormViewEl.classList.add('hidden')
       smartPromptViewEl.classList.remove('hidden')
       contactModalCloseEl.classList.add('hidden')
@@ -1477,6 +1527,7 @@
       if (contactModalSubmitting) {
         return
       }
+      dismissAvailabilityPromptForListing(listingId)
       smartPromptBypassed = true
       submitContactForm()
     }
