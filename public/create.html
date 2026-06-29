@@ -227,54 +227,8 @@
       color: #721c24;
     }
 
-    .message.success {
-      background: #e8f5e9;
-      border: 1px solid #c8e6c9;
-      color: #1b5e20;
-    }
-
     .message.hidden {
       display: none;
-    }
-
-    .success-link-box {
-      margin-top: 12px;
-      padding: 12px;
-      background: #f0f4f8;
-      border: 1px solid #d8e2ec;
-      border-radius: 6px;
-    }
-
-    .success-link-label {
-      font-size: 13px;
-      font-weight: bold;
-      margin: 0 0 8px;
-      color: #333;
-    }
-
-    .success-link-row {
-      display: flex;
-      gap: 8px;
-      align-items: stretch;
-    }
-
-    .success-link-input {
-      flex: 1;
-      min-width: 0;
-      padding: 10px;
-      font-size: 13px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background: white;
-      color: #333;
-    }
-
-    .copy-link-btn {
-      width: auto;
-      margin-top: 0;
-      padding: 10px 14px;
-      font-size: 14px;
-      white-space: nowrap;
     }
 
     .footer-note {
@@ -289,6 +243,170 @@
         margin: 20px;
         padding: 20px;
       }
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .overlay.hidden {
+      display: none !important;
+    }
+
+    .overlay-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+    }
+
+    .overlay-dialog {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+      padding: 28px 24px 24px;
+      box-sizing: border-box;
+    }
+
+    .loading-dialog {
+      text-align: center;
+      padding: 36px 28px 32px;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 20px;
+      border: 3px solid #d8e2ec;
+      border-top-color: #2d4f73;
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-title {
+      margin: 0 0 12px;
+      font-size: 20px;
+      line-height: 1.35;
+      color: #222;
+    }
+
+    .loading-subtext {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #666;
+      min-height: 1.5em;
+    }
+
+    .success-icon {
+      font-size: 28px;
+      color: #1e6b3a;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .success-title {
+      margin: 0 0 16px;
+      font-size: 22px;
+      line-height: 1.3;
+      color: #222;
+      text-align: center;
+    }
+
+    .success-body {
+      margin: 0 0 14px;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #444;
+    }
+
+    .success-list {
+      margin: 0 0 20px;
+      padding-left: 20px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #444;
+    }
+
+    .success-section-heading {
+      margin: 0 0 10px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #222;
+    }
+
+    .success-guidance {
+      margin: 0 0 24px;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .success-email-warning {
+      margin: 0 0 16px;
+      padding: 10px 12px;
+      background: #fff8e6;
+      border: 1px solid #f0d78c;
+      border-radius: 4px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #7a5a00;
+    }
+
+    .success-email-warning.hidden {
+      display: none;
+    }
+
+    .modal-btn {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px 20px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    .modal-btn:first-of-type {
+      margin-top: 0;
+    }
+
+    .modal-btn-primary {
+      background-color: #2d4f73;
+      color: white;
+    }
+
+    .modal-btn-primary:hover {
+      background-color: #1f3a55;
+    }
+
+    .modal-btn-secondary {
+      background: white;
+      color: #2d4f73;
+      border: 1px solid #2d4f73;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #f0f4f8;
     }
   </style>
 </head>
@@ -373,6 +491,54 @@
     </form>
   </div>
 
+  <!-- LOADING OVERLAY -->
+  <div id="loading-overlay" class="overlay hidden" aria-hidden="true">
+    <div class="overlay-backdrop"></div>
+    <div class="overlay-dialog loading-dialog" role="status" aria-live="polite" aria-busy="true">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <h2 class="loading-title">Creating your PickupDetails page...</h2>
+      <p id="loading-subtext" class="loading-subtext">Creating your secure listing...</p>
+    </div>
+  </div>
+
+  <!-- SUCCESS MODAL -->
+  <div id="success-modal" class="overlay hidden" aria-hidden="true">
+    <div class="overlay-backdrop"></div>
+    <div class="overlay-dialog" role="dialog" aria-modal="true" aria-labelledby="success-modal-title">
+      <div class="success-icon" aria-hidden="true">✓</div>
+      <h2 id="success-modal-title" class="success-title">Your listing is ready!</h2>
+
+      <p class="success-body">Your PickupDetails page has been created successfully.</p>
+      <p class="success-body">Your confirmation email is on its way and includes:</p>
+      <ul class="success-list">
+        <li>Your private edit link</li>
+        <li>Your public listing link</li>
+        <li>A suggested description you can copy and paste into your marketplace listing</li>
+      </ul>
+
+      <p id="success-email-warning" class="success-email-warning hidden">
+        We could not send the confirmation email — check your inbox settings or try again later.
+      </p>
+
+      <h3 class="success-section-heading">How to get the best results</h3>
+      <p class="success-guidance">
+        You may still receive messages through your chosen marketplace.
+      </p>
+      <p class="success-guidance">
+        PickupDetails is designed to help you identify buyers who are willing to spend a little more time and provide the information you asked for.
+      </p>
+      <p class="success-guidance">
+        We recommend focusing on the inquiries you receive through your PickupDetails page, since those buyers have already taken the time to review your listing and complete your questions.
+      </p>
+      <p class="success-guidance">
+        This won't eliminate low-effort messages, but it can make it easier to identify buyers who are genuinely interested.
+      </p>
+
+      <button type="button" class="modal-btn modal-btn-primary" id="success-check-email-btn">I'll Check My Email</button>
+      <button type="button" class="modal-btn modal-btn-secondary" id="success-create-another-btn">Create Another Listing</button>
+    </div>
+  </div>
+
   <script>
     const MAX_IMAGES = 3
     const MAX_EDGE = 1600
@@ -389,9 +555,25 @@
     const imagePreviewsEl = document.getElementById('image-previews')
     const submitBtnEl = document.getElementById('submit-btn')
     const statusMessageEl = document.getElementById('status-message')
+    const loadingOverlayEl = document.getElementById('loading-overlay')
+    const loadingSubtextEl = document.getElementById('loading-subtext')
+    const successModalEl = document.getElementById('success-modal')
+    const successEmailWarningEl = document.getElementById('success-email-warning')
+    const successCheckEmailBtnEl = document.getElementById('success-check-email-btn')
+    const successCreateAnotherBtnEl = document.getElementById('success-create-another-btn')
+
+    const LOADING_MESSAGES = [
+      'Creating your secure listing...',
+      'Uploading your photos...',
+      'Generating your private edit link...',
+      'Preparing your confirmation email...',
+      'Almost ready...'
+    ]
 
     let selectedImages = []
     let nextImageId = 1
+    let isSubmitting = false
+    let loadingMessageInterval = null
 
     function showStatus(message, type) {
       statusMessageEl.innerHTML = message
@@ -402,6 +584,69 @@
     function clearStatus() {
       statusMessageEl.classList.add('hidden')
       statusMessageEl.innerHTML = ''
+    }
+
+    function startLoadingMessages() {
+      var index = 0
+      loadingSubtextEl.textContent = LOADING_MESSAGES[0]
+      loadingMessageInterval = setInterval(function () {
+        index = (index + 1) % LOADING_MESSAGES.length
+        loadingSubtextEl.textContent = LOADING_MESSAGES[index]
+      }, 2500)
+    }
+
+    function stopLoadingMessages() {
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval)
+        loadingMessageInterval = null
+      }
+    }
+
+    function showLoadingOverlay() {
+      loadingOverlayEl.classList.remove('hidden')
+      loadingOverlayEl.setAttribute('aria-hidden', 'false')
+      startLoadingMessages()
+    }
+
+    function hideLoadingOverlay() {
+      stopLoadingMessages()
+      loadingOverlayEl.classList.add('hidden')
+      loadingOverlayEl.setAttribute('aria-hidden', 'true')
+    }
+
+    function showSuccessModal(emailSent) {
+      if (emailSent === false) {
+        successEmailWarningEl.classList.remove('hidden')
+      } else {
+        successEmailWarningEl.classList.add('hidden')
+      }
+      successModalEl.classList.remove('hidden')
+      successModalEl.setAttribute('aria-hidden', 'false')
+      successCheckEmailBtnEl.focus()
+    }
+
+    function hideSuccessModal() {
+      successModalEl.classList.add('hidden')
+      successModalEl.setAttribute('aria-hidden', 'true')
+    }
+
+    function resetForm() {
+      createFormEl.reset()
+      selectedImages.forEach(function (item) {
+        URL.revokeObjectURL(item.previewUrl)
+      })
+      selectedImages = []
+      renderImagePreviews()
+      clearStatus()
+      submitBtnEl.disabled = false
+      isSubmitting = false
+    }
+
+    function handleSubmitFailure(message) {
+      hideLoadingOverlay()
+      showStatus(message, 'error')
+      submitBtnEl.disabled = false
+      isSubmitting = false
     }
 
     function renderImagePreviews() {
@@ -516,6 +761,11 @@
 
     createFormEl.addEventListener('submit', function (e) {
       e.preventDefault()
+
+      if (isSubmitting) {
+        return
+      }
+
       clearStatus()
 
       var title = titleEl.value.trim()
@@ -530,7 +780,9 @@
         return
       }
 
+      isSubmitting = true
       submitBtnEl.disabled = true
+      showLoadingOverlay()
 
       Promise.all(selectedImages.map(function (item, index) {
         return compressImage(item.file, index + 1)
@@ -567,62 +819,35 @@
         })
         .then(function (result) {
           if (!result.ok) {
-            showStatus(result.data.error || 'Failed to create listing.', 'error')
-            submitBtnEl.disabled = false
+            handleSubmitFailure(result.data.error || 'Failed to create listing.')
             return
           }
 
-          var message = 'Listing created successfully.'
-          if (result.data.emailSent === false) {
-            message += ' We could not send the confirmation email — check your inbox settings or try again later.'
-          } else {
-            message += ' A confirmation email with your edit link has been sent.'
-          }
-
-          if (result.data.publicUrl) {
-            message += '<div class="success-link-box">'
-              + '<p class="success-link-label">Share your listing</p>'
-              + '<div class="success-link-row">'
-              + '<input type="text" class="success-link-input" id="public-url-input" readonly value="' + result.data.publicUrl.replace(/"/g, '&quot;') + '" />'
-              + '<button type="button" class="copy-link-btn" id="copy-public-url-btn">Copy link</button>'
-              + '</div></div>'
-          }
-
-          showStatus(message, 'success')
-
-          var copyBtn = document.getElementById('copy-public-url-btn')
-          if (copyBtn) {
-            copyBtn.addEventListener('click', function () {
-              var input = document.getElementById('public-url-input')
-              var url = input ? input.value : result.data.publicUrl
-
-              function showCopied() {
-                copyBtn.textContent = 'Copied!'
-                setTimeout(function () {
-                  copyBtn.textContent = 'Copy link'
-                }, 2000)
-              }
-
-              if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(url).then(showCopied).catch(function () {
-                  if (input) {
-                    input.select()
-                    document.execCommand('copy')
-                    showCopied()
-                  }
-                })
-              } else if (input) {
-                input.select()
-                document.execCommand('copy')
-                showCopied()
-              }
-            })
-          }
+          hideLoadingOverlay()
+          showSuccessModal(result.data.emailSent)
         })
         .catch(function () {
-          showStatus('Could not process one of your photos. Try a different image or submit without photos.', 'error')
-          submitBtnEl.disabled = false
+          handleSubmitFailure('Could not process one of your photos. Try a different image or submit without photos.')
         })
+    })
+
+    successCheckEmailBtnEl.addEventListener('click', function () {
+      hideSuccessModal()
+      submitBtnEl.disabled = false
+      isSubmitting = false
+    })
+
+    successCreateAnotherBtnEl.addEventListener('click', function () {
+      hideSuccessModal()
+      resetForm()
+    })
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !successModalEl.classList.contains('hidden')) {
+        hideSuccessModal()
+        submitBtnEl.disabled = false
+        isSubmitting = false
+      }
     })
   </script>
 
