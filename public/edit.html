@@ -427,7 +427,7 @@
         .then(function (result) {
           if (!result.ok) {
             closeConfirmModal()
-            showStatus(result.data.error || 'Failed to mark listing as sold.', 'error')
+            showStatus(formatApiError(result.data) || 'Failed to mark listing as sold.', 'error')
             soldBtnEl.disabled = false
             saveBtnEl.disabled = false
             confirmSoldBtnEl.disabled = false

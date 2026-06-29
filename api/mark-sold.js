@@ -19,7 +19,11 @@ export default async function handler(req, res) {
       .maybeSingle()
 
     if (lookupError) {
-      return res.status(500).json({ error: 'Failed to verify listing' })
+      return res.status(500).json({
+        error: 'Failed to verify listing',
+        detail: lookupError.message,
+        code: lookupError.code || null
+      })
     }
 
     if (!existing) {
@@ -30,17 +34,38 @@ export default async function handler(req, res) {
       return res.status(403).json({ error: 'Listing is already marked as sold' })
     }
 
-    const { error: updateError } = await supabase
+    const soldAt = new Date().toISOString()
+    let { error: updateError } = await supabase
       .from('listings')
       .update({
         status: 'sold',
-        sold_at: new Date().toISOString()
+        sold_at: soldAt
       })
       .eq('edit_token', edit_token.trim())
       .eq('id', existing.id)
 
     if (updateError) {
-      return res.status(500).json({ error: 'Failed to mark listing as sold' })
+      const soldAtColumnMissing =
+        updateError.code === 'PGRST204' ||
+        /sold_at/i.test(updateError.message || '')
+
+      if (soldAtColumnMissing) {
+        const retry = await supabase
+          .from('listings')
+          .update({ status: 'sold' })
+          .eq('edit_token', edit_token.trim())
+          .eq('id', existing.id)
+
+        updateError = retry.error
+      }
+    }
+
+    if (updateError) {
+      return res.status(500).json({
+        error: 'Failed to mark listing as sold',
+        detail: updateError.message,
+        code: updateError.code || null
+      })
     }
 
     return res.status(200).json({ success: true })
