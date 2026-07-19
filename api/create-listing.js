@@ -238,7 +238,7 @@ export default async function handler(req, res) {
 
     try {
       await resend.emails.send({
-        from: 'PickupDetails <onboarding@resend.dev>',
+        from: 'PickupDetails <notifications@pickupdetails.com>',
         to: contact_email,
         subject: 'Your PickupDetails listing is ready',
         html: buildConfirmationEmailHtml({ title, description, publicUrl, editUrl })
