@@ -113,29 +113,42 @@ function escapeHtml(text) {
 }
 
 function buildConfirmationEmailHtml({ publicUrl, editUrl, homepageUrl }) {
-  const marketplacePost = `To make pickup easier, I've posted my availability, pickup location details, and answers to common questions here:
+  const marketplaceDescriptionAddon = `Interested? I use Seller's Filter to share pickup details and handle buyer inquiries. The link is in the comments.`
 
-${publicUrl}
+  const defaultShareTemplate = `Interested? View the pickup details and contact me here:
 
-If you're interested, please review the details and submit a contact request through the listing.`
+${publicUrl}`
 
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a1a1a; line-height: 1.5; max-width: 600px;">
       <p style="font-size: 18px; font-weight: 600; margin: 0 0 24px;">Your Seller's Filter listing has been created successfully.</p>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Share Your Listing</h2>
-      <p style="margin: 0 0 8px;">Share your listing link anywhere you're selling — Facebook Marketplace, Craigslist, OfferUp, and more. Buyers can review your pickup details before contacting you, helping reduce repetitive questions and unnecessary back-and-forth.</p>
+      <p style="margin: 0 0 8px;">Use your Seller's Filter listing anywhere you're selling. Buyers can review your pickup details before contacting you, helping reduce repetitive questions and unnecessary back-and-forth.</p>
       <p style="margin: 0 0 24px;"><a href="${publicUrl}" style="color: #2563eb;">${publicUrl}</a></p>
 
-      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Suggested Marketplace Description</h2>
-      <p style="margin: 0 0 8px;">Create your Marketplace listing as you normally would by adding your title, price, photos, condition, and any other listing details.</p>
-      <p style="margin: 0 0 8px;">Instead of writing a long description, consider using the following message in the description field to direct interested buyers to your Seller's Filter listing:</p>
-      <div style="background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 6px; padding: 16px; margin: 0 0 24px; white-space: pre-wrap; font-size: 14px;">${escapeHtml(marketplacePost)}</div>
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Facebook Marketplace</h2>
+      <p style="margin: 0 0 8px;">Facebook Marketplace requires special handling. URLs placed in Marketplace listing descriptions are not useful or clickable for buyers, while links placed in comments on Marketplace listings can be clickable.</p>
+      <p style="margin: 0 0 8px;">Create your Facebook Marketplace listing normally, including the title, price, photos, condition, item description, and other relevant listing information.</p>
+      <p style="margin: 0 0 8px;"><strong>Suggested Marketplace description add-on</strong></p>
+      <p style="margin: 0 0 8px;">Add this short message to your Marketplace description:</p>
+      <div style="background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 6px; padding: 16px; margin: 0 0 16px; white-space: pre-wrap; font-size: 14px;">${escapeHtml(marketplaceDescriptionAddon)}</div>
+      <p style="margin: 0 0 8px;">After you publish the Marketplace listing, add a comment to your own listing containing your Seller's Filter public listing URL:</p>
+      <p style="margin: 0 0 24px;"><a href="${publicUrl}" style="color: #2563eb;">${publicUrl}</a></p>
+
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Sharing Somewhere Else?</h2>
+      <p style="margin: 0 0 8px;">When the platform or location supports clickable links, you can use this simple default message:</p>
+      <div style="background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 6px; padding: 16px; margin: 0 0 24px; white-space: pre-wrap; font-size: 14px;">${escapeHtml(defaultShareTemplate)}</div>
+
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Keep Your Listing Up to Date</h2>
+      <p style="margin: 0 0 8px;">Seller's Filter works best when buyers can trust the information they see. If your availability, pickup details, or other information changes, update your listing.</p>
+      <p style="margin: 0 0 8px;"><strong>When your item sells, please mark it as sold promptly.</strong></p>
+      <p style="margin: 0 0 24px;">Keeping listings current helps buyers avoid contacting sellers about unavailable items—and helps everyone spend less time asking "Is this available?"</p>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Manage Your Listing</h2>
       <p style="margin: 0 0 8px;"><strong>Do not share this link.</strong> Anyone with it can edit your listing.</p>
       <p style="margin: 0 0 8px;"><a href="${editUrl}" style="color: #2563eb;">${editUrl}</a></p>
-      <p style="margin: 0 0 24px;">Save this email so you can edit your listing later.</p>
+      <p style="margin: 0 0 24px;"><strong>Save this email.</strong> You'll need the private link above to update your listing or mark the item as sold.</p>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">What is Seller's Filter?</h2>
       <p style="margin: 0 0 8px;">Seller's Filter helps sellers organize pickup information in one place so buyers can review important details before reaching out.</p>
