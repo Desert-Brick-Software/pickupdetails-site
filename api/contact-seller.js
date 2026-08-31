@@ -23,6 +23,25 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+const BUYER_DECLARATIONS = {
+  ready_to_purchase: {
+    label: 'Ready to purchase',
+    meaning: "I'm prepared to purchase this item if it matches the listing/description."
+  },
+  interested_still_looking: {
+    label: 'Interested but still looking',
+    meaning: "I'm interested, but I'd like to inspect or consider the item before committing to purchase."
+  }
+}
+
+function resolveBuyerDeclaration(value) {
+  const key = trimString(value)
+  if (!Object.prototype.hasOwnProperty.call(BUYER_DECLARATIONS, key)) {
+    return null
+  }
+  return { value: key, ...BUYER_DECLARATIONS[key] }
+}
+
 function buildSellerEmailHtml(listing, buyer) {
   const title = escapeHtml(listing.title || "Seller's Filter listing")
   const priceBlock = listing.price
@@ -37,6 +56,11 @@ function buildSellerEmailHtml(listing, buyer) {
   const phoneBlock = buyer.phone
     ? `<p><strong>Buyer phone:</strong> ${escapeHtml(buyer.phone)}</p>`
     : ''
+  const declaration = buyer.declaration
+  const declarationBlock = declaration
+    ? `<p><strong>Buyer declaration: ${escapeHtml(declaration.label)}</strong></p>
+    <p>${escapeHtml(declaration.meaning)}</p>`
+    : ''
 
   return `
     <h2>New buyer inquiry</h2>
@@ -48,12 +72,12 @@ function buildSellerEmailHtml(listing, buyer) {
     <p><strong>Buyer name:</strong> ${escapeHtml(buyer.name)}</p>
     <p><strong>Buyer email:</strong> ${escapeHtml(buyer.email)}</p>
     ${phoneBlock}
+    ${declarationBlock}
     <p><strong>Message:</strong></p>
     <p>${escapeHtml(buyer.message).replace(/\n/g, '<br />')}</p>
     <hr />
     <p><strong>Buyer acknowledgments:</strong></p>
     <p>✓ I understand this item may sell before the seller responds.</p>
-    <p>✓ I intend to purchase this item if it matches the description and we can agree on pickup.</p>
     <hr />
     <p>You can reply directly to the buyer's email address above.</p>
   `
@@ -87,7 +111,7 @@ export default async function handler(req, res) {
   const buyer_phone = trimString(body.buyer_phone) || null
   const buyer_message = trimString(body.buyer_message)
   const acknowledge_may_sell = body.acknowledge_may_sell === true
-  const acknowledge_intent_to_purchase = body.acknowledge_intent_to_purchase === true
+  const buyer_declaration = resolveBuyerDeclaration(body.buyer_declaration)
   const phone_contact_consent = body.phone_contact_consent === true
 
   if (!listing_id) {
@@ -114,8 +138,10 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'acknowledge_may_sell must be true' })
   }
 
-  if (!acknowledge_intent_to_purchase) {
-    return res.status(400).json({ error: 'acknowledge_intent_to_purchase must be true' })
+  if (!buyer_declaration) {
+    return res.status(400).json({
+      error: 'buyer_declaration must be ready_to_purchase or interested_still_looking'
+    })
   }
 
   if (buyer_phone && !phone_contact_consent) {
@@ -149,7 +175,8 @@ export default async function handler(req, res) {
       name: buyer_name,
       email: buyer_email,
       phone: buyer_phone && phone_contact_consent ? buyer_phone : null,
-      message: buyer_message
+      message: buyer_message,
+      declaration: buyer_declaration
     }
 
     const listingTitle = listing.title || "Seller's Filter listing"

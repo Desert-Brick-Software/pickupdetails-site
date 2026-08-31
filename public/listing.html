@@ -562,11 +562,26 @@
       cursor: pointer;
     }
 
-    .contact-ack-label input[type="checkbox"] {
+    .contact-ack-label input[type="checkbox"],
+    .contact-ack-label input[type="radio"] {
       width: auto;
       flex-shrink: 0;
       margin: 2px 0 0;
       padding: 0;
+    }
+
+    .contact-declaration {
+      margin: 14px 0 0;
+      padding: 0;
+      border: none;
+      min-width: 0;
+    }
+
+    .contact-declaration-legend {
+      font-weight: bold;
+      font-size: 14px;
+      padding: 0;
+      color: #222;
     }
 
     .contact-form-error {
@@ -968,10 +983,17 @@
               <input type="checkbox" id="contact-ack-may-sell" name="acknowledge_may_sell" />
               <span>I understand this item may sell before the seller responds.</span>
             </label>
-            <label class="contact-ack-label">
-              <input type="checkbox" id="contact-ack-intent" name="acknowledge_intent_to_purchase" />
-              <span>I intend to purchase this item if it matches the description and we can agree on pickup.</span>
-            </label>
+            <fieldset class="contact-declaration">
+              <legend class="contact-declaration-legend">Buyer declaration</legend>
+              <label class="contact-ack-label">
+                <input type="radio" id="contact-declaration-ready" name="buyer_declaration" value="ready_to_purchase" />
+                <span><strong>Ready to purchase</strong> — I'm prepared to purchase this item if it matches the listing/description.</span>
+              </label>
+              <label class="contact-ack-label">
+                <input type="radio" id="contact-declaration-looking" name="buyer_declaration" value="interested_still_looking" />
+                <span><strong>Interested but still looking</strong> — I'm interested, but I'd like to inspect or consider the item before committing to purchase.</span>
+              </label>
+            </fieldset>
           </div>
 
           <div id="contact-form-error" class="message error contact-form-error hidden"></div>
@@ -1072,7 +1094,6 @@
     const contactPhoneConsentWrapEl = document.getElementById('contact-phone-consent-wrap')
     const contactPhoneConsentEl = document.getElementById('contact-phone-consent')
     const contactAckMaySellEl = document.getElementById('contact-ack-may-sell')
-    const contactAckIntentEl = document.getElementById('contact-ack-intent')
     const smartPromptViewEl = document.getElementById('smart-prompt-view')
     const smartPromptCancelBtnEl = document.getElementById('smart-prompt-cancel-btn')
     const smartPromptSendBtnEl = document.getElementById('smart-prompt-send-btn')
@@ -1087,6 +1108,17 @@
     var AVAILABILITY_PROMPT_DISMISSED_KEY = 'pickupdetails:availability-prompt-dismissed'
 
     var PHONE_CONSENT_ERROR = 'Please confirm that the seller may contact you by phone or text, or remove your phone number.'
+
+    var BUYER_DECLARATION_VALUES = {
+      ready_to_purchase: true,
+      interested_still_looking: true
+    }
+
+    function getSelectedBuyerDeclaration() {
+      var selected = contactFormEl.querySelector('input[name="buyer_declaration"]:checked')
+      var value = selected ? selected.value : ''
+      return BUYER_DECLARATION_VALUES[value] ? value : ''
+    }
 
     function showError(message) {
       document.body.classList.remove('has-listing')
@@ -1428,8 +1460,8 @@
         return 'Please confirm that you understand this item may sell before the seller responds.'
       }
 
-      if (!contactAckIntentEl.checked) {
-        return 'Please confirm that you intend to purchase this item if it matches the description.'
+      if (!getSelectedBuyerDeclaration()) {
+        return 'Please select a buyer declaration.'
       }
 
       return null
@@ -1460,7 +1492,7 @@
           buyer_phone: phone || null,
           buyer_message: contactBuyerMessageEl.value.trim(),
           acknowledge_may_sell: contactAckMaySellEl.checked,
-          acknowledge_intent_to_purchase: contactAckIntentEl.checked,
+          buyer_declaration: getSelectedBuyerDeclaration(),
           phone_contact_consent: phone ? contactPhoneConsentEl.checked : false
         })
       })
