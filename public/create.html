@@ -18,6 +18,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-wrap: wrap;
       padding: 16px 24px;
       background: white;
       border-bottom: 1px solid #e5e5e5;
@@ -25,7 +26,9 @@
     }
 
     .logo {
-      height: 48px;
+      height: 80px;
+      width: auto;
+      flex-shrink: 0;
     }
 
     .tagline {
@@ -239,6 +242,10 @@
     }
 
     @media (max-width: 600px) {
+      .logo {
+        height: 60px;
+      }
+
       .container {
         margin: 20px;
         padding: 20px;
