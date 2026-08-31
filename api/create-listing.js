@@ -1,5 +1,6 @@
 import { supabase } from './lib/supabase'
-import { buildPublicListingUrl } from './lib/public-listing-url'
+import { buildPublicListingUrl, buildSellerEditUrl, getPublicBaseUrl } from './lib/public-listing-url'
+import { getResendFromAddress } from './lib/email-sender'
 import { Resend } from 'resend'
 import crypto from 'crypto'
 import formidable from 'formidable'
@@ -111,7 +112,7 @@ function escapeHtml(text) {
     .replace(/"/g, '&quot;')
 }
 
-function buildConfirmationEmailHtml({ title, description, publicUrl, editUrl }) {
+function buildConfirmationEmailHtml({ publicUrl, editUrl, homepageUrl }) {
   const marketplacePost = `To make pickup easier, I've posted my availability, pickup location details, and answers to common questions here:
 
 ${publicUrl}
@@ -120,7 +121,7 @@ If you're interested, please review the details and submit a contact request thr
 
   return `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1a1a1a; line-height: 1.5; max-width: 600px;">
-      <p style="font-size: 18px; font-weight: 600; margin: 0 0 24px;">Your PickupDetails listing has been created successfully.</p>
+      <p style="font-size: 18px; font-weight: 600; margin: 0 0 24px;">Your Seller's Filter listing has been created successfully.</p>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Share Your Listing</h2>
       <p style="margin: 0 0 8px;">Share your listing link anywhere you're selling — Facebook Marketplace, Craigslist, OfferUp, and more. Buyers can review your pickup details before contacting you, helping reduce repetitive questions and unnecessary back-and-forth.</p>
@@ -128,7 +129,7 @@ If you're interested, please review the details and submit a contact request thr
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Suggested Marketplace Description</h2>
       <p style="margin: 0 0 8px;">Create your Marketplace listing as you normally would by adding your title, price, photos, condition, and any other listing details.</p>
-      <p style="margin: 0 0 8px;">Instead of writing a long description, consider using the following message in the description field to direct interested buyers to your PickupDetails listing:</p>
+      <p style="margin: 0 0 8px;">Instead of writing a long description, consider using the following message in the description field to direct interested buyers to your Seller's Filter listing:</p>
       <div style="background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 6px; padding: 16px; margin: 0 0 24px; white-space: pre-wrap; font-size: 14px;">${escapeHtml(marketplacePost)}</div>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Manage Your Listing</h2>
@@ -136,8 +137,8 @@ If you're interested, please review the details and submit a contact request thr
       <p style="margin: 0 0 8px;"><a href="${editUrl}" style="color: #2563eb;">${editUrl}</a></p>
       <p style="margin: 0 0 24px;">Save this email so you can edit your listing later.</p>
 
-      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">What is PickupDetails?</h2>
-      <p style="margin: 0 0 8px;">PickupDetails helps sellers organize pickup information in one place so buyers can review important details before reaching out.</p>
+      <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">What is Seller's Filter?</h2>
+      <p style="margin: 0 0 8px;">Seller's Filter helps sellers organize pickup information in one place so buyers can review important details before reaching out.</p>
       <ul style="margin: 0 0 24px; padding-left: 20px;">
         <li>Less back-and-forth</li>
         <li>Fewer misunderstandings</li>
@@ -145,7 +146,7 @@ If you're interested, please review the details and submit a contact request thr
       </ul>
 
       <h2 style="font-size: 16px; font-weight: 600; margin: 0 0 8px;">Help Us Grow</h2>
-      <p style="margin: 0 0 24px;">Know someone who sells online? Share PickupDetails with them: <a href="https://pickupdetails.com" style="color: #2563eb;">https://pickupdetails.com</a></p>
+      <p style="margin: 0 0 24px;">Know someone who sells online? Share Seller's Filter with them: <a href="${homepageUrl}" style="color: #2563eb;">${homepageUrl}</a></p>
 
       <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;" />
       <p style="margin: 0; font-size: 13px; color: #666;">Built by Desert Brick Software</p>
@@ -156,6 +157,13 @@ If you're interested, please review the details and submit a contact request thr
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  try {
+    getPublicBaseUrl()
+    getResendFromAddress()
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Server configuration error' })
   }
 
   let tempFiles = []
@@ -231,17 +239,18 @@ export default async function handler(req, res) {
       }
     }
 
-    const editUrl = `https://pickupdetails.com/edit.html?token=${edit_token}`
+    const editUrl = buildSellerEditUrl(edit_token)
     const publicUrl = buildPublicListingUrl(title, listing.id)
+    const homepageUrl = getPublicBaseUrl()
 
     let emailSent = true
 
     try {
       await resend.emails.send({
-        from: 'PickupDetails <notifications@pickupdetails.com>',
+        from: getResendFromAddress(),
         to: contact_email,
-        subject: 'Your PickupDetails listing is ready',
-        html: buildConfirmationEmailHtml({ title, description, publicUrl, editUrl })
+        subject: "Your Seller's Filter listing is ready",
+        html: buildConfirmationEmailHtml({ publicUrl, editUrl, homepageUrl })
       })
     } catch {
       emailSent = false

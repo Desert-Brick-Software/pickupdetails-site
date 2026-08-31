@@ -1,9 +1,8 @@
 import { supabase } from './lib/supabase'
+import { getResendFromAddress } from './lib/email-sender'
 import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
-
-const FROM_ADDRESS = 'PickupDetails <notifications@pickupdetails.com>'
 
 function escapeHtml(text) {
   return String(text)
@@ -25,7 +24,7 @@ function isValidEmail(email) {
 }
 
 function buildSellerEmailHtml(listing, buyer) {
-  const title = escapeHtml(listing.title || 'PickupDetails listing')
+  const title = escapeHtml(listing.title || "Seller's Filter listing")
   const priceBlock = listing.price
     ? `<p><strong>Price:</strong> ${escapeHtml(listing.price)}</p>`
     : ''
@@ -72,6 +71,13 @@ function buildBuyerEmailHtml(listingTitle) {
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
+  }
+
+  let fromAddress
+  try {
+    fromAddress = getResendFromAddress()
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Server configuration error' })
   }
 
   const body = req.body || {}
@@ -146,18 +152,18 @@ export default async function handler(req, res) {
       message: buyer_message
     }
 
-    const listingTitle = listing.title || 'PickupDetails listing'
+    const listingTitle = listing.title || "Seller's Filter listing"
     const safeSubjectTitle = listingTitle.replace(/[\r\n]/g, ' ')
 
     await resend.emails.send({
-      from: FROM_ADDRESS,
+      from: fromAddress,
       to: listing.contact_email,
       subject: `New inquiry: ${safeSubjectTitle}`,
       html: buildSellerEmailHtml(listing, buyer)
     })
 
     await resend.emails.send({
-      from: FROM_ADDRESS,
+      from: fromAddress,
       to: buyer_email,
       subject: 'Your message was sent',
       html: buildBuyerEmailHtml(listingTitle)
