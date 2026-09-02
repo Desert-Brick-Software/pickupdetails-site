@@ -328,6 +328,26 @@ button {
   background-color: #1f3a55;
 }
 
+.button-danger {
+  padding: 8px 10px;
+  background: #fff;
+  color: #8a1f1f;
+  border: 1px solid #d8b4b4;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.button-danger:hover:not(:disabled) {
+  background: #f8ecec;
+}
+
+.button-danger:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
 .empty {
   background: #fff;
   padding: 28px 16px;

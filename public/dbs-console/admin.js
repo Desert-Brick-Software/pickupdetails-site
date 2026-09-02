@@ -149,9 +149,16 @@
             '<span class="status-badge ' + statusClass + '">' + statusLabel + '</span>' +
             '<p class="listing-meta">Created ' + escapeHtml(formatDate(listing.created_at) || 'unknown') + '</p>' +
             soldLine +
+            '<p class="listing-meta">Views: ' + escapeHtml(String(listing.view_count || 0)) + '</p>' +
+            '<p class="listing-meta">Last viewed: ' +
+              escapeHtml(listing.last_viewed_at ? (formatDate(listing.last_viewed_at) || 'Never') : 'Never') +
+            '</p>' +
           '</div>' +
           '<div class="listing-actions">' +
             openLink +
+            '<button type="button" class="button-danger" data-delete-id="' + escapeHtml(listing.id || '') +
+              '" data-delete-title="' + escapeHtml(listing.title || 'Untitled listing') +
+            '">Delete Listing</button>' +
           '</div>' +
         '</article>'
       )
@@ -186,6 +193,12 @@
     }
 
     renderListings(data)
+
+    const listings = Array.isArray(data.listings) ? data.listings : []
+    if (listings.length === 0 && currentPage > 1) {
+      currentPage -= 1
+      await loadListings()
+    }
   }
 
   async function checkSession() {
@@ -286,6 +299,63 @@
   nextPage.addEventListener('click', function () {
     currentPage += 1
     loadListings()
+  })
+
+  listingsEl.addEventListener('click', async function (event) {
+    const button = event.target.closest('[data-delete-id]')
+    if (!button || button.disabled) {
+      return
+    }
+
+    const id = button.getAttribute('data-delete-id')
+    const title = button.getAttribute('data-delete-title') || 'this listing'
+    if (!id) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      'Delete listing "' + title + '"? This cannot be undone.'
+    )
+    if (!confirmed) {
+      return
+    }
+
+    const originalLabel = button.textContent
+    button.disabled = true
+    button.textContent = 'Deleting…'
+    setListError('')
+
+    try {
+      const { response, data } = await api('/api/dbs-console/delete-listing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id })
+      })
+
+      if (response.status === 401) {
+        showLogin()
+        return
+      }
+
+      if (response.status === 404) {
+        await loadListings()
+        setListError('That listing was not found. The list was refreshed.')
+        return
+      }
+
+      if (!response.ok || !data || data.ok !== true) {
+        setListError('Could not delete listing. Try again.')
+        button.disabled = false
+        button.textContent = originalLabel
+        return
+      }
+
+      await loadListings()
+    } catch {
+      setListError('Could not delete listing. Try again.')
+      button.disabled = false
+      button.textContent = originalLabel
+    }
   })
 
   checkSession()

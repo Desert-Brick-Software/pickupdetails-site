@@ -11,7 +11,9 @@ const LISTING_FIELDS = [
   'status',
   'image_urls',
   'created_at',
-  'sold_at'
+  'sold_at',
+  'last_viewed_at',
+  'view_count'
 ]
 
 const DEFAULT_LIMIT = 50
@@ -67,6 +69,8 @@ function mapListing(row) {
   for (const field of LISTING_FIELDS) {
     listing[field] = row?.[field] ?? null
   }
+  const viewCount = Number(listing.view_count)
+  listing.view_count = Number.isFinite(viewCount) && viewCount > 0 ? viewCount : 0
   listing.public_path = `/l/${buildListingSlug(listing.title, listing.id)}`
   return listing
 }

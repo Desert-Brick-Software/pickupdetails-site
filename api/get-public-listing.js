@@ -13,10 +13,28 @@ function classifyListing(listing) {
   }
 
   if (status === 'sold') {
-    return { sold: true }
+    return { sold: true, id: listing.id || null }
   }
 
   return { listing: null }
+}
+
+async function recordPublicView(listingId) {
+  if (!listingId) {
+    return
+  }
+
+  try {
+    const { error } = await supabase.rpc('record_public_listing_view', {
+      p_id: listingId
+    })
+
+    if (error) {
+      console.error('Failed to record public listing view', error.code || error.message)
+    }
+  } catch {
+    console.error('Failed to record public listing view')
+  }
 }
 
 async function fetchListingById(id) {
@@ -99,6 +117,7 @@ export default async function handler(req, res) {
     }
 
     if (result.sold) {
+      await recordPublicView(result.id)
       return res.status(200).json({ sold: true })
     }
 
@@ -106,6 +125,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ sold: true })
     }
 
+    await recordPublicView(result.listing.id)
     return res.status(200).json({ listing: result.listing })
   } catch {
     return res.status(500).json({ error: 'Server error' })
