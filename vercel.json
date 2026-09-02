@@ -3,6 +3,26 @@
     {
       "source": "/l/:slug",
       "destination": "/listing.html"
+    },
+    {
+      "source": "/dbs-console",
+      "destination": "/dbs-console/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/dbs-console",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    },
+    {
+      "source": "/dbs-console/(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
     }
   ]
 }

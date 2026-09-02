@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Seller's Filter Admin</title>
+  <link rel="stylesheet" href="/dbs-console/admin.css" />
+</head>
+<body>
+  <div id="boot" class="boot">Loading…</div>
+
+  <div id="login-view" class="login-page" hidden>
+    <div class="login-card">
+      <img src="/logo-cropped.png" alt="Seller's Filter logo" class="logo" />
+      <h1>Seller's Filter</h1>
+      <p class="login-sub">DBS owner login</p>
+      <form id="login-form" autocomplete="off">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required />
+
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+
+        <p id="login-error" class="error" hidden></p>
+        <button type="submit" id="login-button">Log In</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="admin-view" hidden>
+    <header class="admin-header">
+      <div class="admin-header-inner">
+        <div class="brand">
+          <img src="/logo-cropped.png" alt="Seller's Filter logo" class="logo-small" />
+          <h1>Seller's Filter Admin</h1>
+        </div>
+        <button type="button" id="logout-button" class="button-secondary">Logout</button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <form id="filters" class="filters">
+        <label>
+          Search
+          <input id="search" type="search" placeholder="Title, email, or location" />
+        </label>
+        <label>
+          Status
+          <select id="status">
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="sold">Sold</option>
+          </select>
+        </label>
+        <label>
+          Sort
+          <select id="sort">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+          </select>
+        </label>
+      </form>
+
+      <div class="results-meta">
+        <p id="results-count">Loading listings…</p>
+        <div class="pager">
+          <button type="button" id="prev-page" class="button-secondary" disabled>Previous</button>
+          <span id="page-label"></span>
+          <button type="button" id="next-page" class="button-secondary" disabled>Next</button>
+        </div>
+      </div>
+
+      <p id="list-error" class="error" hidden></p>
+      <div id="listings" class="listings"></div>
+    </main>
+  </div>
+
+  <script src="/dbs-console/admin.js"></script>
+</body>
+</html>

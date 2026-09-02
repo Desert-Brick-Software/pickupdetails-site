@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@supabase/supabase-js": "^2.99.3",
+    "bcryptjs": "^3.0.3",
     "formidable": "^3.5.4",
     "resend": "^6.9.4"
   }
