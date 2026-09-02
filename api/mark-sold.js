@@ -12,35 +12,20 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { data: existing, error: lookupError } = await supabase
-      .from('listings')
-      .select('id')
-      .eq('edit_token', edit_token.trim())
-      .maybeSingle()
+    const { data, error } = await supabase.rpc('mark_listing_sold', {
+      p_edit_token: edit_token.trim()
+    })
 
-    if (lookupError) {
-      return res.status(500).json({
-        error: 'Failed to verify listing',
-        detail: lookupError.message,
-        code: lookupError.code || null
-      })
-    }
-
-    if (!existing) {
-      return res.status(404).json({ error: 'Listing not found' })
-    }
-
-    const { error: deleteError } = await supabase
-      .from('listings')
-      .delete()
-      .eq('edit_token', edit_token.trim())
-
-    if (deleteError) {
+    if (error) {
       return res.status(500).json({
         error: 'Failed to mark listing as sold',
-        detail: deleteError.message,
-        code: deleteError.code || null
+        detail: error.message,
+        code: error.code || null
       })
+    }
+
+    if (!data || data.ok === false) {
+      return res.status(404).json({ error: 'Listing not found' })
     }
 
     return res.status(200).json({ success: true })

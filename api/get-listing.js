@@ -1,7 +1,5 @@
 import { supabase } from './lib/supabase'
 
-const SAFE_FIELDS = 'id, title, description, price, availability, image_urls, status, created_at'
-
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' })
@@ -14,11 +12,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { data, error } = await supabase
-      .from('listings')
-      .select(SAFE_FIELDS)
-      .eq('edit_token', token.trim())
-      .maybeSingle()
+    const { data, error } = await supabase.rpc('get_listing_for_manage', {
+      p_edit_token: token.trim()
+    })
 
     if (error) {
       return res.status(500).json({

@@ -1,8 +1,6 @@
 import { supabase } from './lib/supabase'
 import { extractUuidSuffixFromSlug } from './lib/public-listing-url'
 
-const SAFE_FIELDS = 'id, title, description, price, availability, location, image_urls, status, created_at'
-
 function classifyListing(listing) {
   if (!listing) {
     return { listing: null }
@@ -22,11 +20,9 @@ function classifyListing(listing) {
 }
 
 async function fetchListingById(id) {
-  const { data, error } = await supabase
-    .from('listings')
-    .select(SAFE_FIELDS)
-    .eq('id', id)
-    .maybeSingle()
+  const { data, error } = await supabase.rpc('get_public_listing_by_id', {
+    p_id: id
+  })
 
   if (error) {
     return { error }

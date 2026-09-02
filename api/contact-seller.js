@@ -149,11 +149,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { data: listing, error } = await supabase
-      .from('listings')
-      .select('id, title, price, availability, location, status, contact_email')
-      .eq('id', listing_id)
-      .maybeSingle()
+    const { data: listing, error } = await supabase.rpc('get_active_listing_for_contact', {
+      p_id: listing_id
+    })
 
     if (error) {
       return res.status(500).json({ error: 'Failed to look up listing' })
@@ -161,10 +159,6 @@ export default async function handler(req, res) {
 
     if (!listing) {
       return res.status(404).json({ error: 'Listing not found' })
-    }
-
-    if (String(listing.status).toLowerCase() !== 'active') {
-      return res.status(400).json({ error: 'Listing is no longer available.' })
     }
 
     if (!listing.contact_email) {

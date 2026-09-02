@@ -210,24 +210,17 @@ export default async function handler(req, res) {
 
     const edit_token = crypto.randomBytes(32).toString('hex')
 
-    const { data: listing, error } = await supabase
-      .from('listings')
-      .insert([
-        {
-          title,
-          description,
-          price,
-          availability,
-          location,
-          contact_email,
-          edit_token,
-          status: 'active'
-        }
-      ])
-      .select('id')
-      .single()
+    const { data: listingId, error } = await supabase.rpc('create_listing', {
+      p_title: title,
+      p_description: description,
+      p_price: price,
+      p_availability: availability,
+      p_location: location,
+      p_contact_email: contact_email,
+      p_edit_token: edit_token
+    })
 
-    if (error) {
+    if (error || !listingId) {
       return res.status(500).json({ error: 'DB insert failed' })
     }
 
@@ -235,25 +228,25 @@ export default async function handler(req, res) {
 
     if (imageFiles.length > 0) {
       try {
-        image_urls = await uploadListingImages(listing.id, imageFiles)
+        image_urls = await uploadListingImages(listingId, imageFiles)
       } catch (uploadError) {
         return res.status(500).json({
           error: uploadError.message || 'Image upload failed. Please try again.'
         })
       }
 
-      const { error: updateError } = await supabase
-        .from('listings')
-        .update({ image_urls })
-        .eq('id', listing.id)
+      const { data: setResult, error: updateError } = await supabase.rpc('set_listing_image_urls', {
+        p_edit_token: edit_token,
+        p_image_urls: image_urls
+      })
 
-      if (updateError) {
+      if (updateError || !setResult || setResult.ok !== true) {
         return res.status(500).json({ error: 'Failed to save image URLs. Please try again.' })
       }
     }
 
     const editUrl = buildSellerEditUrl(edit_token)
-    const publicUrl = buildPublicListingUrl(title, listing.id)
+    const publicUrl = buildPublicListingUrl(title, listingId)
     const homepageUrl = getPublicBaseUrl()
 
     let emailSent = true

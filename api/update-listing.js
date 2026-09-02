@@ -25,31 +25,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { data: existing, error: lookupError } = await supabase
-      .from('listings')
-      .select('id, status')
-      .eq('edit_token', edit_token.trim())
-      .maybeSingle()
+    const { data, error } = await supabase.rpc('update_listing_for_manage', {
+      p_edit_token: edit_token.trim(),
+      p_title: Object.prototype.hasOwnProperty.call(updates, 'title') ? updates.title : null,
+      p_description: Object.prototype.hasOwnProperty.call(updates, 'description') ? updates.description : null,
+      p_price: Object.prototype.hasOwnProperty.call(updates, 'price') ? updates.price : null,
+      p_availability: Object.prototype.hasOwnProperty.call(updates, 'availability') ? updates.availability : null
+    })
 
-    if (lookupError) {
-      return res.status(500).json({ error: 'Failed to verify listing' })
-    }
-
-    if (!existing) {
-      return res.status(404).json({ error: 'Listing not found' })
-    }
-
-    if (String(existing.status).toLowerCase() === 'sold') {
-      return res.status(403).json({ error: 'Listing has been sold and cannot be edited' })
-    }
-
-    const { error: updateError } = await supabase
-      .from('listings')
-      .update(updates)
-      .eq('edit_token', edit_token.trim())
-
-    if (updateError) {
+    if (error) {
       return res.status(500).json({ error: 'Failed to update listing' })
+    }
+
+    if (!data || data.ok === false) {
+      if (data && data.error === 'sold') {
+        return res.status(403).json({ error: 'Listing has been sold and cannot be edited' })
+      }
+      return res.status(404).json({ error: 'Listing not found' })
     }
 
     return res.status(200).json({ success: true })
